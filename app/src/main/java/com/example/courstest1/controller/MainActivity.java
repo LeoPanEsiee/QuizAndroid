@@ -20,6 +20,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView mTextViewGreeting;
     private EditText mEditTextName;
     private Button mButtonPlay;
+
+    private Button mButtonBestScore;
+
+
     private static final int GAME_ACTIVITY_REQUEST_CODE = 42;
     private static final String SHARED_PREF_USER_INFO = "SHARED_PREF_USER_INFO";
     private static final String SHARED_PREF_USER_INFO_NAME = "SHARED_PREF_USER_INFO_NAME";
@@ -44,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
         mTextViewGreeting = findViewById(R.id.textview_greeting);
         mEditTextName = findViewById(R.id.edittext_name);
         mButtonPlay = findViewById(R.id.button_play);
+
+
+        mButtonBestScore = findViewById(R.id.button_bestscore);
 
         mButtonPlay.setEnabled(false);
 
@@ -90,7 +97,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+
     }
+
+
 
 
 

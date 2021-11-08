@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CoursTest1</string>
+    <string name="WillDoBetter">, ¿lo harás mejor esta vez?</string>
+    <string name="LastScoreWas">"Su última puntuación fue : "</string>
+    <string name="WelcomeBack">"Bienvenido de nuevo, "</string>
+    <string name="let_s_play">Vamos a jugar</string>
+    <string name="Type_your_name">Por favor, escriba su nombre</string>
+    <string name="Welcome_Message">Bienvenido. ¿Cómo te llamas?</string>
+    <string name="previous">Anteriormente</string>
+    <string name="next">Siguiente</string>
+    <string name="action_settings">Ajustes</string>
+    <string name="AndroidCreator">¿Quién es el creador de Android?</string>
+    <string name="MoonLanding">¿Cuándo llegó el primer hombre a la luna?</string>
+    <string name="SimpsonsNumber">¿Cuál es el número de la casa de Los Simpson?</string>
+    <string name="BestScore">Mejor puntuación</string>
+</resources>
