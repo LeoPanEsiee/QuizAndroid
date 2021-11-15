@@ -10,11 +10,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+
+import com.example.courstest1.model.User;
+import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity {
     private TextView mTextViewGreeting;
@@ -22,6 +27,11 @@ public class MainActivity extends AppCompatActivity {
     private Button mButtonPlay;
 
     private Button mButtonBestScore;
+
+    private String firstName;
+    private int lastScore;
+
+    User user = new User();
 
 
     private static final int GAME_ACTIVITY_REQUEST_CODE = 42;
@@ -34,7 +44,15 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (GAME_ACTIVITY_REQUEST_CODE == requestCode && RESULT_OK == resultCode) {
             // Fetch the score from the Intent
-            int score = data.getIntExtra(GameActivity.BUNDLE_EXTRA_SCORE, 0);
+
+
+            Gson gson = new Gson();
+            firstName = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getString(SHARED_PREF_USER_INFO_NAME, null);
+            lastScore = data.getIntExtra(GameActivity.BUNDLE_EXTRA_SCORE, 0);
+            String json = "{\"playerName\" : \"" + firstName + "\",\"playerScore\" : \"" + lastScore +"\"}";
+            user = gson.fromJson(json, User.class);
+
+            displayUserInfo();
         }
 
     }
@@ -54,15 +72,14 @@ public class MainActivity extends AppCompatActivity {
 
         mButtonPlay.setEnabled(false);
 
-        String firstName = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).
-                getString(SHARED_PREF_USER_INFO_NAME, null);
-        int lastScore = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(GameActivity.BUNDLE_EXTRA_SCORE, 0);
 
-        if(firstName != null){
-            mTextViewGreeting.setText(getString(R.string.WelcomeBack) + firstName + "\n" +
-                    getString(R.string.LastScoreWas)+ lastScore + getString(R.string.WillDoBetter));
 
-        }
+        Gson gson = new Gson();
+        firstName = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getString(SHARED_PREF_USER_INFO_NAME, null);
+        lastScore = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(GameActivity.BUNDLE_EXTRA_SCORE, 0);
+        String json = "{\"playerName\" : \"" + firstName + "\",\"playerScore\" : \"" + lastScore +"\"}";
+        user = gson.fromJson(json, User.class);
+        displayUserInfo();
 
 
         mEditTextName.addTextChangedListener(new TextWatcher() {
@@ -78,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                // This is where we'll check the user input
                 mButtonPlay.setEnabled(!s.toString().isEmpty());
             }
         });
@@ -96,10 +112,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
     }
 
+
+    private void displayUserInfo(){
+        if(user.getFirstName() != null){
+            mTextViewGreeting.setText(getString(R.string.WelcomeBack) + user.getFirstName() + "\n" +
+                    getString(R.string.LastScoreWas)+ user.getScore() + getString(R.string.WillDoBetter));
+
+        }
+    }
 
 
 
