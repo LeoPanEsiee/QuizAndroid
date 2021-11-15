@@ -39,16 +39,16 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private boolean mEnableTouchEvents;
 
 
-
     public static final String BUNDLE_STATE_SCORE = "BUNDLE_STATE_SCORE";
     public static final String BUNDLE_STATE_QUESTION = "BUNDLE_STATE_QUESTION";
+    public static final String BUNDLE_STATE_QUESTION_BANK = "BUNDLE_STATE_QUESTION_BANK";
+    public static final String BUNDLE_STATE_CURRENT_QUESTION = "BUNDLE_STATE_CURRENT_QUESTION";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-
 
         mTextView = findViewById(R.id.game_activity_textview_question);
         mGameButton1 = findViewById(R.id.game_activity_button_1);
@@ -66,8 +66,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
         mEnableTouchEvents = true;
 
-
-
         if(savedInstanceState != null){
             mRemainingQuestionCount = savedInstanceState.getInt(BUNDLE_STATE_QUESTION);
             mScore = savedInstanceState.getInt(BUNDLE_STATE_SCORE);
@@ -75,15 +73,28 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             mRemainingQuestionCount = 2;
             mScore = 0;
         }
-
     }
 
     @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
+    protected void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putInt(BUNDLE_STATE_SCORE, mScore);
+        savedInstanceState.putInt(BUNDLE_STATE_QUESTION, mRemainingQuestionCount);
 
-        outState.putInt(BUNDLE_STATE_SCORE, mScore);
-        outState.putInt(BUNDLE_STATE_QUESTION, mRemainingQuestionCount);
+        savedInstanceState.putSerializable(BUNDLE_STATE_QUESTION_BANK, mQuestionBank);
+        savedInstanceState.putSerializable(BUNDLE_STATE_CURRENT_QUESTION, mCurrentQuestion);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        mScore = savedInstanceState.getInt(BUNDLE_STATE_SCORE);
+        mRemainingQuestionCount = savedInstanceState.getInt(BUNDLE_STATE_QUESTION);
+
+        mQuestionBank = (QuestionBank) savedInstanceState.getSerializable(BUNDLE_STATE_QUESTION_BANK);
+        mCurrentQuestion = (Question) savedInstanceState.getSerializable(BUNDLE_STATE_CURRENT_QUESTION);
+        displayQuestion(mCurrentQuestion);
     }
 
     @Override

@@ -11,8 +11,7 @@
         android:theme="@style/Theme.CoursTest1">
         <activity
             android:name=".controller.GameActivity"
-            android:exported="false"
-            android:configChanges="orientation|screenSize"/>
+            android:exported="false"/>
         <activity
             android:name=".controller.MainActivity"
             android:exported="true"
