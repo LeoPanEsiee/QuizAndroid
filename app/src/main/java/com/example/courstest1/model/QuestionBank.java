@@ -19,6 +19,10 @@ public class QuestionBank implements Serializable {
         return mQuestionList.get(mQuestionIndex);
     }
 
+    public String getCurrentQuestionHint() {
+        return mQuestionList.get(mQuestionIndex).getHint();
+    }
+
     public Question getNextQuestion() {
         mQuestionIndex++;
         return getCurrentQuestion();

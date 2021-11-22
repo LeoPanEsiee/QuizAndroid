@@ -1,17 +1,19 @@
 package com.example.courstest1.controller;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +22,7 @@ import com.example.courstest1.model.Question;
 import com.example.courstest1.model.QuestionBank;
 
 import java.util.Arrays;
+import java.util.Random;
 
 public class GameActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -28,6 +31,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     Button mGameButton2;
     Button mGameButton3;
     Button mGameButton4;
+    Button mHiddedButton;
+    Button mAnswerButton;
+    ImageButton mJockerButton;
 
     QuestionBank mQuestionBank = generateQuestions();
 
@@ -35,6 +41,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     Question mCurrentQuestion;
 
     private int mScore;
+    private int mJokerPress;
     public static final String BUNDLE_EXTRA_SCORE = "BUNDLE_EXTRA_SCORE";
     private boolean mEnableTouchEvents;
 
@@ -55,11 +62,13 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         mGameButton2 = findViewById(R.id.game_activity_button_2);
         mGameButton3 = findViewById(R.id.game_activity_button_3);
         mGameButton4 = findViewById(R.id.game_activity_button_4);
+        mJockerButton = findViewById(R.id.game_activity_jocker_button);
 
         mGameButton1.setOnClickListener(this);
         mGameButton2.setOnClickListener(this);
         mGameButton3.setOnClickListener(this);
         mGameButton4.setOnClickListener(this);
+        mJockerButton.setOnClickListener(this);
 
         mCurrentQuestion = mQuestionBank.getCurrentQuestion();
         displayQuestion(mCurrentQuestion);
@@ -120,7 +129,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                         "Jake Wharton",
                         "Paul Smith"
                 ),
-                0
+                0,
+                "Toys Story child"
         );
 
         Question question2 = new Question(
@@ -131,7 +141,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                         "1967",
                         "1969"
                 ),
-                3
+                3,
+                "Toys Story child"
+
         );
 
         Question question3 = new Question(
@@ -142,7 +154,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                         "666",
                         "742"
                 ),
-                3
+                3,
+                "Toys Story child"
+
         );
 
         return new QuestionBank(Arrays.asList(question1, question2, question3));
@@ -151,7 +165,35 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
         int index;
+        int rand;
+        int id ;
 
+
+        if(view == mJockerButton){
+            Log.println(Log.INFO,"TAG","Jocker presssed");
+            switch (mJokerPress) {
+                case 0:
+                    Toast.makeText(this,mQuestionBank.getCurrentQuestionHint(),Toast.LENGTH_SHORT).show();
+                    mScore--;
+                    break;
+                case 1:
+                    mScore--;
+                    do{
+                        rand = new Random().nextInt(3)+1 ;
+                    }while(rand == mQuestionBank.getCurrentQuestion().getAnswerIndex());
+                    id = this.getResources().getIdentifier("@+id/game_activity_button_1" , "button", getPackageName());
+                    Log.println(Log.INFO,"DEBUGGINF_ID","Number hide button : " + id );
+                    mHiddedButton = (Button) findViewById(id);
+                    mHiddedButton.setVisibility(View.GONE);
+                    break;
+                case 2:
+                    mAnswerButton = findViewById(this.getResources().getIdentifier("game_activity_button_" + mQuestionBank.getCurrentQuestion().getAnswerIndex(), "id", "com.sample.project"));
+                    mAnswerButton.setBackgroundColor(0x008000);
+                    break;
+            }
+            mJokerPress++;
+            return;
+        }
         if (view == mGameButton1) {
             index = 0;
         } else if (view == mGameButton2) {
@@ -166,7 +208,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
         if(index == mQuestionBank.getCurrentQuestion().getAnswerIndex()){
             Toast.makeText(this, "Correct !", Toast.LENGTH_SHORT).show();
-            mScore++;
+            mScore+=10;
         }else{
             Toast.makeText(this, "Incorrect !", Toast.LENGTH_SHORT).show();
         }
