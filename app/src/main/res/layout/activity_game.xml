@@ -52,6 +52,7 @@
         android:layout_weight="1"
         android:padding="16dp"
         android:textSize="20sp"
+        app:backgroundTint="@color/purple_500"
         tools:text="Answer3" />
 
     <Button

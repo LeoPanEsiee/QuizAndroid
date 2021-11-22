@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -34,6 +35,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     Button mHiddedButton;
     Button mAnswerButton;
     ImageButton mJockerButton;
+    Button[] liste =  new Button[4];
 
     QuestionBank mQuestionBank = generateQuestions();
 
@@ -82,6 +84,12 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             mRemainingQuestionCount = 2;
             mScore = 0;
         }
+
+
+        liste[0] = mGameButton1;
+        liste[1] = mGameButton2;
+        liste[2] = mGameButton3;
+        liste[3] = mGameButton4;
     }
 
     @Override
@@ -168,28 +176,26 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         int rand;
         int id ;
 
-
         if(view == mJockerButton){
             Log.println(Log.INFO,"TAG","Jocker presssed");
             switch (mJokerPress) {
                 case 0:
-                    Toast.makeText(this,mQuestionBank.getCurrentQuestionHint(),Toast.LENGTH_SHORT).show();
                     mScore--;
+                    Toast.makeText(this,mQuestionBank.getCurrentQuestionHint(),Toast.LENGTH_SHORT).show();
                     break;
                 case 1:
                     mScore--;
                     do{
-                        rand = new Random().nextInt(3)+1 ;
+                        rand = new Random().nextInt(4);
                     }while(rand == mQuestionBank.getCurrentQuestion().getAnswerIndex());
-                    id = this.getResources().getIdentifier("@+id/game_activity_button_1" , "button", getPackageName());
-                    Log.println(Log.INFO,"DEBUGGINF_ID","Number hide button : " + id );
-                    mHiddedButton = (Button) findViewById(id);
-                    mHiddedButton.setVisibility(View.GONE);
+                    liste[rand].setVisibility(View.GONE);
                     break;
                 case 2:
-                    mAnswerButton = findViewById(this.getResources().getIdentifier("game_activity_button_" + mQuestionBank.getCurrentQuestion().getAnswerIndex(), "id", "com.sample.project"));
-                    mAnswerButton.setBackgroundColor(0x008000);
+                    mScore--;
+                    liste[mQuestionBank.getCurrentQuestion().getAnswerIndex()].setBackgroundColor(Color.parseColor("#008000"));
                     break;
+
+                default:
             }
             mJokerPress++;
             return;
@@ -218,6 +224,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                for(int i=0;i<4;i++){
+                liste[i].setVisibility(View.VISIBLE);}
+                mJokerPress = 0;
+                liste[mQuestionBank.getCurrentQuestion().getAnswerIndex()].setBackgroundColor(Color.parseColor("#6200ee"));
                 mRemainingQuestionCount--;
 
                 if (mRemainingQuestionCount > 0) {
