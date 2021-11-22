@@ -1,13 +1,12 @@
 package com.example.courstest1.controller;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,10 +19,18 @@ import com.example.courstest1.model.Question;
 import com.example.courstest1.model.QuestionBank;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 public class GameActivity extends AppCompatActivity implements View.OnClickListener {
 
-    TextView mTextView;
+    private static final long START_TIME_IN_MS = 30000;
+
+    private TextView mTextViewTimer;
+    private CountDownTimer mCountDownTimer;
+    private boolean mTimerRunning;
+    private long mTimeLeftInMs = START_TIME_IN_MS;
+
+    TextView mTextViewQuestion;
     Button mGameButton1;
     Button mGameButton2;
     Button mGameButton3;
@@ -50,7 +57,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        mTextView = findViewById(R.id.game_activity_textview_question);
+        mTextViewQuestion = findViewById(R.id.game_activity_textview_question);
         mGameButton1 = findViewById(R.id.game_activity_button_1);
         mGameButton2 = findViewById(R.id.game_activity_button_2);
         mGameButton3 = findViewById(R.id.game_activity_button_3);
@@ -73,6 +80,11 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             mRemainingQuestionCount = 2;
             mScore = 0;
         }
+
+
+        mTextViewTimer = findViewById(R.id.game_activity_textview_countdown_timer);
+        startTimer();
+
     }
 
     @Override
@@ -103,13 +115,12 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void displayQuestion(final Question question){
-        mTextView.setText(question.getQuestion());
+        mTextViewQuestion.setText(question.getQuestion());
         mGameButton1.setText(question.getChoiceList().get(0));
         mGameButton2.setText(question.getChoiceList().get(1));
         mGameButton3.setText(question.getChoiceList().get(2));
         mGameButton4.setText(question.getChoiceList().get(3));
     }
-
 
     private QuestionBank generateQuestions(){
         Question question1 = new Question(
@@ -164,48 +175,87 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             throw new IllegalStateException("Unknown clicked view : " + view);
         }
 
-        if(index == mQuestionBank.getCurrentQuestion().getAnswerIndex()){
-            Toast.makeText(this, "Correct !", Toast.LENGTH_SHORT).show();
+        correction(index == mQuestionBank.getCurrentQuestion().getAnswerIndex());
+    }
+
+
+    private void correction(boolean response){
+        if(response){
+            Toast.makeText(GameActivity.this, "Correct !", Toast.LENGTH_SHORT).show();
             mScore++;
         }else{
-            Toast.makeText(this, "Incorrect !", Toast.LENGTH_SHORT).show();
+            if(mTimerRunning){
+                Toast.makeText(GameActivity.this, "Incorrect !", Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(GameActivity.this, "Timeout !", Toast.LENGTH_SHORT).show();
+            }
         }
+
+        mTimerRunning = false;
+        mCountDownTimer.cancel();
 
         mEnableTouchEvents = false;
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mRemainingQuestionCount--;
+        new Handler().postDelayed(() -> {
+            mRemainingQuestionCount--;
 
-                if (mRemainingQuestionCount > 0) {
-                    mCurrentQuestion = mQuestionBank.getNextQuestion();
-                    displayQuestion(mCurrentQuestion);
-                } else {
-                    endGame();
+            if (mRemainingQuestionCount > 0) {
+                mCurrentQuestion = mQuestionBank.getNextQuestion();
+                displayQuestion(mCurrentQuestion);
 
-                }
-                mEnableTouchEvents = true;
+                //reset timer
+                mTimeLeftInMs = START_TIME_IN_MS;
+                startTimer();
+                updateCountDownText();
+
+            } else {
+                endGame();
+
             }
+            mEnableTouchEvents = true;
         }, 2000);
 
     }
+
 
     private void endGame(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         builder.setTitle("Well done!")
                 .setMessage("Your score is " + mScore)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent();
-                        intent.putExtra(BUNDLE_EXTRA_SCORE, mScore);
-                        setResult(RESULT_OK, intent);
-                        finish();
-                    }
+                .setPositiveButton("OK", (dialog, which) -> {
+                    Intent intent = new Intent();
+                    intent.putExtra(BUNDLE_EXTRA_SCORE, mScore);
+                    setResult(RESULT_OK, intent);
+                    finish();
                 })
                 .create()
                 .show();
+    }
+
+
+    private void startTimer(){
+        mCountDownTimer = new CountDownTimer(mTimeLeftInMs, 1000) {
+            @Override
+            public void onTick(long l) {
+                mTimeLeftInMs = l;
+                updateCountDownText();
+            }
+
+            @Override
+            public void onFinish() {
+                mTimerRunning = false;
+                correction(false);
+            }
+        }.start();
+        mTimerRunning = true;
+    }
+
+
+    private void updateCountDownText(){
+        int minutes = (int) (mTimeLeftInMs/1000) / 60;
+        int seconds = (int) (mTimeLeftInMs/1000) % 60;
+        String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+        mTextViewTimer.setText(timeLeftFormatted);
     }
 }
