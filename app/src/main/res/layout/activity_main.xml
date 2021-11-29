@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".controller.MainActivity">
 
@@ -23,7 +22,10 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:hint="@string/Type_your_name"
-        android:minHeight="48dp" />
+
+        android:minHeight="48dp"
+        android:autofillHints="Entrez votre nom"
+        android:inputType="" />
 
 
     <Button
@@ -41,6 +43,8 @@
         android:layout_gravity="center_horizontal"
         android:layout_margin="16dp"
         android:text="@string/BestScore" />
+
+
 
 
 </androidx.appcompat.widget.LinearLayoutCompat>

@@ -12,17 +12,21 @@
         <activity
             android:name=".controller.GameActivity"
             android:exported="false"/>
+
         <activity
             android:name=".controller.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.CoursTest1.NoActionBar">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver android:name=".model.ReminderBroadcast"/>
+
     </application>
 
 </manifest>

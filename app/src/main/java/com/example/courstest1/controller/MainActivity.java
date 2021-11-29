@@ -1,6 +1,12 @@
 package com.example.courstest1.controller;
 
+import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.example.courstest1.R;
@@ -10,14 +16,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.View;
 
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
+import com.example.courstest1.model.ReminderBroadcast;
 import com.example.courstest1.model.User;
 import com.google.gson.Gson;
 
@@ -25,8 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView mTextViewGreeting;
     private EditText mEditTextName;
     private Button mButtonPlay;
-
-    private Button mButtonBestScore;
 
     private String firstName;
     private int lastScore;
@@ -39,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String SHARED_PREF_USER_INFO_NAME = "SHARED_PREF_USER_INFO_NAME";
 
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -48,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
             Gson gson = new Gson();
             firstName = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getString(SHARED_PREF_USER_INFO_NAME, null);
-            lastScore = data.getIntExtra(GameActivity.BUNDLE_EXTRA_SCORE, 0);
+            lastScore = data != null ? data.getIntExtra(GameActivity.BUNDLE_EXTRA_SCORE, 0) : 0;
             String json = "{\"playerName\" : \"" + firstName + "\",\"playerScore\" : \"" + lastScore +"\"}";
             user = gson.fromJson(json, User.class);
 
@@ -56,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+
 
 
     @Override
@@ -66,9 +73,6 @@ public class MainActivity extends AppCompatActivity {
         mTextViewGreeting = findViewById(R.id.textview_greeting);
         mEditTextName = findViewById(R.id.edittext_name);
         mButtonPlay = findViewById(R.id.button_play);
-
-
-        mButtonBestScore = findViewById(R.id.button_bestscore);
 
         mButtonPlay.setEnabled(false);
 
@@ -99,18 +103,35 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mButtonPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
+        mButtonPlay.setOnClickListener((view)->{
+            getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
                     .edit()
                     .putString(SHARED_PREF_USER_INFO_NAME, mEditTextName.getText().toString())
                     .apply();
 
-                Intent gameActivityIntent = new Intent(MainActivity.this, GameActivity.class);
-                startActivityForResult(gameActivityIntent, GAME_ACTIVITY_REQUEST_CODE);
-            }
+            Intent gameActivityIntent = new Intent(MainActivity.this, GameActivity.class);
+            startActivityForResult(gameActivityIntent, GAME_ACTIVITY_REQUEST_CODE);
         });
+
+        //Used for Notification
+        createNotificationChannel();
+
+
+    }
+
+
+
+    private void createNotificationChannel(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            CharSequence name = "QuestQuizz";
+            String description = "quizz description";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("myChannelId", name, importance);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
 
     }
 

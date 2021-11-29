@@ -3,9 +3,10 @@ package com.example.courstest1.controller;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import com.example.courstest1.R;
 import com.example.courstest1.model.Question;
 import com.example.courstest1.model.QuestionBank;
+import com.example.courstest1.model.ReminderBroadcast;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -54,10 +56,33 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private boolean mEnableTouchEvents;
 
 
+    AlarmManager alarmManager;
+    PendingIntent pendingIntent;
+
+
     public static final String BUNDLE_STATE_SCORE = "BUNDLE_STATE_SCORE";
     public static final String BUNDLE_STATE_QUESTION = "BUNDLE_STATE_QUESTION";
     public static final String BUNDLE_STATE_QUESTION_BANK = "BUNDLE_STATE_QUESTION_BANK";
     public static final String BUNDLE_STATE_CURRENT_QUESTION = "BUNDLE_STATE_CURRENT_QUESTION";
+
+    boolean wasInBackground;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (wasInBackground) {
+            wasInBackground = false;
+            alarmManager.cancel(pendingIntent);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(mRemainingQuestionCount>0){
+            wasInBackground = true;
+            startingNotificationTimer();
+        }
+    }
 
 
     @Override
@@ -124,6 +149,22 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         mCurrentQuestion = (Question) savedInstanceState.getSerializable(BUNDLE_STATE_CURRENT_QUESTION);
         displayQuestion(mCurrentQuestion);
     }
+    private void startingNotificationTimer(){
+        Toast.makeText(this, "Pressed reminder", Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(GameActivity.this, ReminderBroadcast.class);
+        pendingIntent = PendingIntent.getBroadcast(GameActivity.this,0, intent,0);
+
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        long timeAtButtonClick = System.currentTimeMillis();
+
+        long duration = 5 * 3;
+
+        alarmManager.set(AlarmManager.RTC_WAKEUP,
+                timeAtButtonClick + duration,
+                pendingIntent);
+    }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
@@ -185,7 +226,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         int index;
         int rand;
-        int id ;
 
         if(view == mJockerButton){
             Log.println(Log.INFO,"TAG","Jocker presssed");
