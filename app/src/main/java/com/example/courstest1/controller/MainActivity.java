@@ -16,10 +16,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.example.courstest1.model.User;
 import com.google.gson.Gson;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 public class MainActivity extends AppCompatActivity {
     private TextView mTextViewGreeting;
@@ -107,8 +111,24 @@ public class MainActivity extends AppCompatActivity {
                     .putString(SHARED_PREF_USER_INFO_NAME, mEditTextName.getText().toString())
                     .apply();
 
-                Intent gameActivityIntent = new Intent(MainActivity.this, GameActivity.class);
-                startActivityForResult(gameActivityIntent, GAME_ACTIVITY_REQUEST_CODE);
+
+
+                // Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
+                String host = "jdbc:mariadb://109.221.187.188:3306/QUIZZ";
+                String username = "SuperUser";
+                String password ="password1";
+                try {
+                    Class.forName("org.mariadb.jdbc.Driver");
+                    Connection con = DriverManager.getConnection( host, username, password );
+                    Toast.makeText(MainActivity.this, " - Success!", Toast.LENGTH_LONG).show();
+
+                    Intent gameActivityIntent = new Intent(MainActivity.this, GameActivity.class);
+                    startActivityForResult(gameActivityIntent, GAME_ACTIVITY_REQUEST_CODE);
+                } catch (Exception err) {
+                    Toast.makeText(MainActivity.this, "error :" + err.getMessage(), Toast.LENGTH_LONG).show();
+
+                }
+
             }
         });
 
