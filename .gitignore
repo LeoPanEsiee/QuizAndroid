@@ -75,3 +75,5 @@ fastlane/readme.md
 .gradle/7.0.2/javaCompile/javaCompile.lock
 .gradle/7.0.2/javaCompile/taskHistory.bin
 .gradle/buildOutputCleanup/buildOutputCleanup.lock
+*.bin
+*.lock
