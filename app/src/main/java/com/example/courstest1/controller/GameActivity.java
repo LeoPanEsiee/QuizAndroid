@@ -40,8 +40,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     Button mGameButton2;
     Button mGameButton3;
     Button mGameButton4;
-    Button mHiddedButton;
-    Button mAnswerButton;
     ImageButton mJockerButton;
     Button[] liste =  new Button[4];
 
@@ -250,14 +248,12 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
         mEnableTouchEvents = false;
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                for(int i=0;i<4;i++){
-                liste[i].setVisibility(View.VISIBLE);}
-                mJokerPress = 0;
-                liste[mQuestionBank.getCurrentQuestion().getAnswerIndex()].setBackgroundColor(Color.parseColor("#6200ee"));
-                mRemainingQuestionCount--;
+        new Handler().postDelayed(() -> {
+            for(int i=0;i<4;i++){
+            liste[i].setVisibility(View.VISIBLE);}
+            mJokerPress = 0;
+            liste[mQuestionBank.getCurrentQuestion().getAnswerIndex()].setBackgroundColor(Color.parseColor("#6200ee"));
+            mRemainingQuestionCount--;
 
             if (mRemainingQuestionCount > 0) {
                 mCurrentQuestion = mQuestionBank.getNextQuestion();
@@ -274,7 +270,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             }
             mEnableTouchEvents = true;
         }, 2000);
-
     }
 
 
