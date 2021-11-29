@@ -85,6 +85,7 @@
         app:layout_constraintBottom_toTopOf="@+id/game_activity_button_4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:backgroundTint="@color/purple_500"
         tools:text="Answer3" />
 
     <Button
@@ -103,3 +104,13 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:text="Answer4" />
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageButton
+        android:id="@+id/game_activity_jocker_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/JokerButton"
+        app:srcCompat="@mipmap/ic_joker"
+        tools:ignore="ImageContrastCheck" />
+
+</LinearLayout>

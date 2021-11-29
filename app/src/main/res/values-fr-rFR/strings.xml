@@ -14,4 +14,5 @@
     <string name="SimpsonsNumber">Quel est le numéro de la maison des Simpsons ?</string>
     <string name="MoonLanding">Quand le premier homme a-t-il atterri sur la lune ?</string>
     <string name="BestScore">Meilleur score</string>
+    <string name="JokerButton">Bouton Jocker</string>
 </resources>
