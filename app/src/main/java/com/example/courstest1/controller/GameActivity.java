@@ -8,6 +8,7 @@ import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -30,13 +31,7 @@ import java.util.Random;
 
 public class GameActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static final long START_TIME_IN_MS = 30000;
-
-    private TextView mTextViewTimer;
-    private CountDownTimer mCountDownTimer;
-    private boolean mTimerRunning;
-    private long mTimeLeftInMs = START_TIME_IN_MS;
-
+    //View
     TextView mTextViewQuestion;
     Button mGameButton1;
     Button mGameButton2;
@@ -45,46 +40,41 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     ImageButton mJockerButton;
     Button[] liste =  new Button[4];
 
+    //Model
     QuestionBank mQuestionBank = generateQuestions();
-
     private int mRemainingQuestionCount;
     Question mCurrentQuestion;
-
     private int mScore;
-    private int mJokerPress;
-    public static final String BUNDLE_EXTRA_SCORE = "BUNDLE_EXTRA_SCORE";
-    private boolean mEnableTouchEvents;
-
-
-    AlarmManager alarmManager;
-    PendingIntent pendingIntent;
-
-
     public static final String BUNDLE_STATE_SCORE = "BUNDLE_STATE_SCORE";
     public static final String BUNDLE_STATE_QUESTION = "BUNDLE_STATE_QUESTION";
     public static final String BUNDLE_STATE_QUESTION_BANK = "BUNDLE_STATE_QUESTION_BANK";
     public static final String BUNDLE_STATE_CURRENT_QUESTION = "BUNDLE_STATE_CURRENT_QUESTION";
 
+    //Jokers
+    private int mJokerPress;
+    public static final String BUNDLE_EXTRA_SCORE = "BUNDLE_EXTRA_SCORE";
+    private boolean mEnableTouchEvents;
+
+    //Used for sending notifications when user isn't in the app
+    AlarmManager alarmManager;
+    PendingIntent pendingIntent;
     boolean wasInBackground;
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (wasInBackground) {
-            wasInBackground = false;
-            alarmManager.cancel(pendingIntent);
-        }
-    }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if(mRemainingQuestionCount>0){
-            wasInBackground = true;
-            startingNotificationTimer();
-        }
-    }
+    //Timer
+    private TextView mTextViewTimer;
+    private CountDownTimer mCountDownTimer;
+    private boolean mTimerRunning;
+    private static final long START_TIME_IN_MS = 30 * 1000;
+    private long mTimeLeftInMs = START_TIME_IN_MS;
+
+    //Used for playing sounds
+    MediaPlayer player;
 
 
+    /**
+     * On creation of the activity
+     * @param savedInstanceState saved instance
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,6 +118,11 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         liste[3] = mGameButton4;
     }
 
+    /**
+     * For app rotation
+     * We'll save the current game information to use them when the rotation is over
+     * @param savedInstanceState saved instance
+     */
     @Override
     protected void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
@@ -138,6 +133,11 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         savedInstanceState.putSerializable(BUNDLE_STATE_CURRENT_QUESTION, mCurrentQuestion);
     }
 
+    /**
+     * For app rotation
+     * We'll use the saved information to recreate the view
+     * @param savedInstanceState saved instance
+     */
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
@@ -149,6 +149,40 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         mCurrentQuestion = (Question) savedInstanceState.getSerializable(BUNDLE_STATE_CURRENT_QUESTION);
         displayQuestion(mCurrentQuestion);
     }
+
+    //NOTIFICATIONS
+
+    /**
+     * For notifications
+     * When leaving activity, we will start a timer that ask the player to come back play again in x seconds
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(mRemainingQuestionCount>0){
+            wasInBackground = true;
+            startingNotificationTimer();
+        }
+    }
+
+    /**
+     * For notifications
+     * When the user comes back, we will stop the notification timer and not send it
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (wasInBackground) {
+            wasInBackground = false;
+            //stop notification timer
+            alarmManager.cancel(pendingIntent);
+        }
+    }
+
+    /**
+     * For notifications
+     * Starting a timer of x seconds and send a notification to the user at the end of the timer
+     */
     private void startingNotificationTimer(){
         Toast.makeText(this, "Pressed reminder", Toast.LENGTH_SHORT).show();
 
@@ -171,6 +205,11 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         return mEnableTouchEvents && super.dispatchTouchEvent(ev);
     }
 
+    /**
+     * For the view
+     * Display the question and its 4 possible anwsers
+     * @param question question to be displayed
+     */
     private void displayQuestion(final Question question){
         mTextViewQuestion.setText(question.getQuestion());
         mGameButton1.setText(question.getChoiceList().get(0));
@@ -180,6 +219,11 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    /**
+     * For the model
+     * Question Bank
+     * @return QuestionBank the list of questions available
+     */
     private QuestionBank generateQuestions(){
         Question question1 = new Question(
                 "Who is the creator of Android?",
@@ -222,6 +266,11 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         return new QuestionBank(Arrays.asList(question1, question2, question3));
     }
 
+    /**
+     * Detecting which answer or joker is pressed
+     * also deactivate an answer when using second joker
+     * @param view current View containing the buttons
+     */
     @Override
     public void onClick(View view) {
         int index;
@@ -267,25 +316,31 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
-
-
-
+    /**
+     * Check if the answer is correct
+     * Sends Toasts and play Sounds
+     * Start next question and reset timer
+     * Stop timer if the last question was asked
+     *
+     * @param response boolean if answer is correct
+     */
     private void correction(boolean response){
         if(response){
             Toast.makeText(GameActivity.this, "Correct !", Toast.LENGTH_SHORT).show();
             mScore+=10;
+            playSound(R.raw.correct_sound);
         }else{
             if(mTimerRunning){
                 Toast.makeText(GameActivity.this, "Incorrect !", Toast.LENGTH_SHORT).show();
+                playSound(R.raw.incorrect_sound);
             }else{
                 Toast.makeText(GameActivity.this, "Timeout !", Toast.LENGTH_SHORT).show();
+                playSound(R.raw.incorrect_sound);
             }
         }
 
         mTimerRunning = false;
         mCountDownTimer.cancel();
-
         mEnableTouchEvents = false;
 
         new Handler().postDelayed(() -> {
@@ -313,6 +368,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    /**
+     * When last Question is answered, display a screen
+     * If Ok is pressed, we go back to Main Activity
+     */
     private void endGame(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -329,12 +388,22 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    /**
+     * For Question Timer
+     * Start a new timer and decreases it each seconds
+     * Display the timer and updates it each seconds
+     * When timer runs, the answer is incorrect
+     */
     private void startTimer(){
         mCountDownTimer = new CountDownTimer(mTimeLeftInMs, 1000) {
             @Override
             public void onTick(long l) {
                 mTimeLeftInMs = l;
                 updateCountDownText();
+                //System.out.println(mTimeLeftInMs);
+                if(mTimeLeftInMs > 7.5 * 1000 && mTimeLeftInMs < 9 * 1000){
+                    playSound(R.raw.tick_sounds);
+                }
             }
 
             @Override
@@ -347,10 +416,77 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    /**
+     * For Question timer
+     * Format the timer time to display it
+     */
     private void updateCountDownText(){
         int minutes = (int) (mTimeLeftInMs/1000) / 60;
         int seconds = (int) (mTimeLeftInMs/1000) % 60;
         String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
         mTextViewTimer.setText(timeLeftFormatted);
     }
+
+
+    /**
+     * For Sound
+     * Play the sound
+     * @param soundId R.raw.name_of_sound.wav
+     */
+    public void playSound(int soundId){
+        if(player == null){
+            player = MediaPlayer.create(this, soundId);
+            player.setOnCompletionListener(mediaPlayer -> stopSound());
+        }
+
+        player.start();
+    }
+    public void stopSound(){
+        if(player != null){
+            player.release();
+            player = null;
+        }
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopSound();
+    }
+
+    /**
+     * When Pressing Back,
+     * A screen shows that the player has forfeited
+     */
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Forfeit")
+                .setMessage("Your score is " + mScore)
+                .setPositiveButton("OK", (dialog, which) -> {
+                    Intent intent = new Intent();
+                    intent.putExtra(BUNDLE_EXTRA_SCORE, mScore);
+                    setResult(RESULT_OK, intent);
+                    finish();
+                })
+                .create()
+                .show();
+
+        endingBackgroundTasks();
+    }
+
+    /**
+     * For forfeit
+     * Ending all background tasks
+     */
+    private void endingBackgroundTasks(){
+        stopSound();
+
+        mTimerRunning = false;
+        mCountDownTimer.cancel();
+        mEnableTouchEvents = false;
+    }
+
 }
