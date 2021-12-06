@@ -5,10 +5,10 @@ import java.util.List;
 
 public class Question implements Serializable {
 
-    private final String mQuestion;
-    private final List<String> mChoiceList;
-    private final int mAnswerIndex;
-    private final String mHintPhrase;
+    private String mQuestion;
+    private List<String> mChoiceList;
+    private int mAnswerIndex;
+    private String mHintPhrase;
 
 
     public Question(String question, List<String> choiceList, int answerIndex, String hintPhrase) {
@@ -16,6 +16,13 @@ public class Question implements Serializable {
         mChoiceList = choiceList;
         mAnswerIndex = answerIndex;
         mHintPhrase = hintPhrase;
+    }
+
+    public Question() {
+        mQuestion = "";
+        mChoiceList = null;
+        mAnswerIndex = 0;
+        mHintPhrase = "";
     }
 
     public String getQuestion() {
@@ -32,5 +39,30 @@ public class Question implements Serializable {
 
     public int getAnswerIndex() {
         return mAnswerIndex;
+    }
+
+    public void setQuestion(String question) {
+        mQuestion = question;
+    }
+
+    public void setChoiceList(List<String> choiceList) {
+        mChoiceList = choiceList;
+    }
+
+    public void setAnswerIndex(int answerIndex) {
+        mAnswerIndex = answerIndex;
+    }
+
+    public void setHintPhrase(String hintPhrase) {
+        mHintPhrase = hintPhrase;
+    }
+
+    @Override
+    public String toString() {
+        return "Question{" +
+                "mQuestion='" + mQuestion + '\'' +
+                ", mAnswerIndex=" + mAnswerIndex +
+                ", mHintPhrase='" + mHintPhrase + '\'' +
+                '}';
     }
 }

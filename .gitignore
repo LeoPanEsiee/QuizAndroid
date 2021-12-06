@@ -77,3 +77,5 @@ fastlane/readme.md
 .gradle/buildOutputCleanup/buildOutputCleanup.lock
 *.bin
 *.lock
+*.bin
+*.lock

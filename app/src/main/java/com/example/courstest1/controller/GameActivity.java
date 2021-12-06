@@ -21,10 +21,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.courstest1.R;
+import com.example.courstest1.model.InputStreamOperations;
 import com.example.courstest1.model.Question;
 import com.example.courstest1.model.QuestionBank;
 import com.example.courstest1.model.ReminderBroadcast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Random;
@@ -41,7 +51,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     Button[] liste =  new Button[4];
 
     //Model
-    QuestionBank mQuestionBank = generateQuestions();
+    QuestionBank mQuestionBank ;
     private int mRemainingQuestionCount;
     Question mCurrentQuestion;
     private int mScore;
@@ -224,6 +234,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
      * Question Bank
      * @return QuestionBank the list of questions available
      */
+    /*
     private QuestionBank generateQuestions(){
         Question question1 = new Question(
                 "Who is the creator of Android?",
@@ -265,6 +276,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
         return new QuestionBank(Arrays.asList(question1, question2, question3));
     }
+    */
+
 
     /**
      * Detecting which answer or joker is pressed
@@ -488,5 +501,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         mCountDownTimer.cancel();
         mEnableTouchEvents = false;
     }
+
+
+
 
 }

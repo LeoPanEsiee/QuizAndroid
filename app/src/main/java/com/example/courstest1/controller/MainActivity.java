@@ -1,11 +1,9 @@
 package com.example.courstest1.controller;
 
-import android.annotation.SuppressLint;
-import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -20,12 +18,35 @@ import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
-import com.example.courstest1.model.ReminderBroadcast;
+import com.example.courstest1.model.InputStreamOperations;
+import com.example.courstest1.model.Question;
+import com.example.courstest1.model.QuestionBank;
 import com.example.courstest1.model.User;
 import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.Arrays;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.X509TrustManager;
 
 public class MainActivity extends AppCompatActivity {
     private TextView mTextViewGreeting;
@@ -117,6 +138,11 @@ public class MainActivity extends AppCompatActivity {
         createNotificationChannel();
 
 
+
+        QuestionBank questionBank = new QuestionBank();
+        new DownloadData(questionBank).execute("https://10.0.2.2/getQuestions.php");
+
+
     }
 
 
@@ -145,6 +171,97 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private class DownloadData extends AsyncTask<String, Void, QuestionBank> {
+        QuestionBank imageView;
+
+        DownloadData(QuestionBank imageView) {
+            this.imageView = imageView;
+        }
+        String data = "";
+
+        protected QuestionBank doInBackground(String... urls) {
+
+
+            trustEveryone();
+
+
+            String urlOfData = urls[0];
+
+            QuestionBank questionBank = new QuestionBank();
+            try{
+                URL url = new URL(urlOfData) ;
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+                //connection.connect();
+                InputStream inputStream = connection.getInputStream();
+
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                String line ="";
+                while(line!=null){
+                    line = bufferedReader.readLine();
+                    data = data + line;
+                }
+
+                //System.out.println(data);
+
+                JSONArray JA = new JSONArray(data);
+                for(int i = 0 ; i < JA.length();i++){
+                    JSONObject obj = (JSONObject) JA.get(i);
+                    Question question = new Question();
+                    question.setQuestion(obj.getString("description"));
+
+                    question.setChoiceList( Arrays.asList(
+                            obj.getString("ans_1"),
+                            obj.getString("ans_2"),
+                            obj.getString("ans_3"),
+                            obj.getString("ans_4")
+                            )
+                    );
+
+                    question.setAnswerIndex(obj.getInt("result"));
+                    question.setHintPhrase(obj.getString("hint"));
+
+                    questionBank.add(question);
+
+                    System.out.println(question);
+                }
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return questionBank;
+        }
+
+        protected void onPostExecute(QuestionBank result) {
+            //imageView.setImageBitmap(result);
+        }
+    }
+
+    private void trustEveryone() {
+        try {
+            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier(){
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }});
+            SSLContext context = SSLContext.getInstance("TLS");
+            context.init(null, new X509TrustManager[]{new X509TrustManager(){
+                public void checkClientTrusted(X509Certificate[] chain,
+                                               String authType) throws CertificateException {}
+                public void checkServerTrusted(X509Certificate[] chain,
+                                               String authType) throws CertificateException {}
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[0];
+                }}}, new SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(
+                    context.getSocketFactory());
+        } catch (Exception e) { // should never happen
+            e.printStackTrace();
+        }
+    }
 
 
 

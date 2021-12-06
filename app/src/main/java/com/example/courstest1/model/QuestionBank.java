@@ -1,6 +1,7 @@
 package com.example.courstest1.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -11,6 +12,12 @@ public class QuestionBank implements Serializable {
 
     public QuestionBank(List<Question> questionList) {
         mQuestionList = questionList;
+
+        Collections.shuffle(mQuestionList);
+    }
+
+    public QuestionBank() {
+        mQuestionList = new ArrayList<>();
 
         Collections.shuffle(mQuestionList);
     }
@@ -26,5 +33,9 @@ public class QuestionBank implements Serializable {
     public Question getNextQuestion() {
         mQuestionIndex++;
         return getCurrentQuestion();
+    }
+
+    public void add(Question question){
+        mQuestionList.add(question);
     }
 }
