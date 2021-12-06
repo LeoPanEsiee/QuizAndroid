@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,7 +67,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private boolean mTimerRunning;
     private static final long START_TIME_IN_MS = 30 * 1000;
     private long mTimeLeftInMs = START_TIME_IN_MS;
-
+    private ProgressBar timerBar;
     //Used for playing sounds
     MediaPlayer player;
 
@@ -108,6 +109,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
 
         mTextViewTimer = findViewById(R.id.game_activity_textview_countdown_timer);
+        timerBar = findViewById(R.id.game_activity_progress_bar);
         startTimer();
 
 
@@ -280,18 +282,18 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             Log.println(Log.INFO,"TAG","Jocker presssed");
             switch (mJokerPress) {
                 case 0:
-                    mScore--;
+                    mScore = (mScore>0) ? mScore--: mScore;
                     Toast.makeText(this,mQuestionBank.getCurrentQuestionHint(),Toast.LENGTH_SHORT).show();
                     break;
                 case 1:
-                    mScore--;
+                    mScore = (mScore>0) ? mScore--: mScore;
                     do{
                         rand = new Random().nextInt(4);
                     }while(rand == mQuestionBank.getCurrentQuestion().getAnswerIndex());
                     liste[rand].setVisibility(View.GONE);
                     break;
                 case 2:
-                    mScore--;
+                    mScore = (mScore>0) ? mScore--: mScore;
                     liste[mQuestionBank.getCurrentQuestion().getAnswerIndex()].setBackgroundColor(Color.parseColor("#008000"));
                     break;
 
@@ -425,6 +427,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         int seconds = (int) (mTimeLeftInMs/1000) % 60;
         String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
         mTextViewTimer.setText(timeLeftFormatted);
+        timerBar.setProgress( 100 - (int) mTimeLeftInMs /(30 * 1000));
     }
 
 

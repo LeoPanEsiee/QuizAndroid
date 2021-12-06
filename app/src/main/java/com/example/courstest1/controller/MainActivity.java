@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
+import com.bumptech.glide.Glide;
 import com.example.courstest1.R;
 
 import androidx.annotation.Nullable;
@@ -19,6 +20,7 @@ import android.text.TextWatcher;
 
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +31,7 @@ import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity {
     private TextView mTextViewGreeting;
+    private ImageView gifView;
     private EditText mEditTextName;
     private Button mButtonPlay;
 
@@ -73,12 +76,13 @@ public class MainActivity extends AppCompatActivity {
         mTextViewGreeting = findViewById(R.id.textview_greeting);
         mEditTextName = findViewById(R.id.edittext_name);
         mButtonPlay = findViewById(R.id.button_play);
-
+        gifView = findViewById(R.id.gifView);
         mButtonPlay.setEnabled(false);
 
 
 
         Gson gson = new Gson();
+        Glide.with(this).load(R.drawable.giphy).into(gifView);
         firstName = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getString(SHARED_PREF_USER_INFO_NAME, null);
         lastScore = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(GameActivity.BUNDLE_EXTRA_SCORE, 0);
         String json = "{\"playerName\" : \"" + firstName + "\",\"playerScore\" : \"" + lastScore +"\"}";
