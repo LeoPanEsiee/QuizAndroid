@@ -1,5 +1,7 @@
 package com.example.courstest1.Activities;
 
+import static com.example.courstest1.model.CertificateManager.trustEveryone;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,6 +11,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -25,6 +28,11 @@ import com.example.courstest1.model.Question;
 import com.example.courstest1.model.QuestionBank;
 import com.example.courstest1.model.ReminderBroadcast;
 
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Locale;
 import java.util.Random;
 
@@ -70,6 +78,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     MediaPlayer player;
 
 
+    String username;
+
+
     /**
      * On creation of the activity
      * @param savedInstanceState saved instance
@@ -78,6 +89,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
 
         mTextViewQuestion = findViewById(R.id.game_activity_textview_question);
         mGameButton1 = findViewById(R.id.game_activity_button_1);
@@ -118,6 +130,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         liste[1] = mGameButton2;
         liste[2] = mGameButton3;
         liste[3] = mGameButton4;
+
+        username = getIntent().getStringExtra("username");
     }
 
     /**
@@ -390,6 +404,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 })
                 .create()
                 .show();
+
+
+        new UpdatingScore().execute(username, String.valueOf(mScore));
     }
 
 
@@ -480,6 +497,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 .show();
 
         endingBackgroundTasks();
+        new UpdatingScore().execute(username, String.valueOf(mScore));
     }
 
     /**
@@ -492,6 +510,43 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         mTimerRunning = false;
         mCountDownTimer.cancel();
         mEnableTouchEvents = false;
+    }
+
+    public class UpdatingScore extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            trustEveryone();
+            URL url;
+            HttpURLConnection urlConnection = null;
+            try {
+                String username = params[0];
+                String score = params[1];
+                System.out.println("Inserting " + username + " " + score);
+                url = new URL("https://10.0.2.2/updateScore.php?username="+username+"&score="+score+"");
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setDoOutput(true);
+                urlConnection.setChunkedStreamingMode(0);
+
+
+                OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
+                out.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+            }
+
+            return null;
+        }
+
     }
 
 

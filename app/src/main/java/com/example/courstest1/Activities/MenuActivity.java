@@ -12,7 +12,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.courstest1.R;
+import com.example.courstest1.model.Question;
+import com.example.courstest1.model.QuestionBank;
 import com.example.courstest1.model.User;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 
 public class MenuActivity extends AppCompatActivity {
 
@@ -27,6 +34,13 @@ public class MenuActivity extends AppCompatActivity {
     User currentUser = new User();
     TextView TextView_name_placeholder;
     TextView TextView_score_placeholder;
+
+
+    private static final int GAME_ACTIVITY_REQUEST_CODE = 42;
+
+
+    QuestionBank mQuestionBank = new QuestionBank();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,14 +58,25 @@ public class MenuActivity extends AppCompatActivity {
 
 
         TextView_score_placeholder = findViewById(R.id.TV_score_placeholder);
-        new DownloadData().execute("https://10.0.2.2/getScore.php?username=" + username);
+        new DownloadUser().execute("https://10.0.2.2/getScore.php?username=" + username);
 
+
+
+
+        findViewById(R.id.button_menu_leaderboard).setOnClickListener(view -> {
+            startActivity(new Intent(this, LeaderboardActivity.class));
+        });
+
+        findViewById(R.id.button_menu_start).setOnClickListener(view -> {
+
+            new DownloadQuestions().execute("https://10.0.2.2/getQuestions.php");
+        });
 
 
 
     }
 
-    public class DownloadData extends AsyncTask<String, Void, Void> {
+    public class DownloadUser extends AsyncTask<String, Void, Void> {
 
         protected Void doInBackground(String... urls) {
             trustEveryone();
@@ -89,5 +114,71 @@ public class MenuActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         startActivity(new Intent(this, LaunchActivity.class));
+    }
+
+
+    /**
+     * Download async task
+     * Done in background
+     * Get the List of Questions
+     */
+    public class DownloadQuestions extends AsyncTask<String, Void, QuestionBank> {
+
+        protected QuestionBank doInBackground(String... urls) {
+            trustEveryone();
+            String urlOfData = urls[0];
+            String data = "";
+
+            try{
+                URL url = new URL(urlOfData) ;
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                InputStream inputStream = connection.getInputStream();
+
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                String line ="";
+                while(line!=null){
+                    line = bufferedReader.readLine();
+                    data = data + line;
+                }
+
+                JSONArray JA = new JSONArray(data);
+                for(int i = 0 ; i < JA.length();i++){
+                    JSONObject obj = (JSONObject) JA.get(i);
+                    Question question = new Question();
+                    question.setQuestion(obj.getString("description"));
+
+                    question.setChoiceList( Arrays.asList(
+                            obj.getString("ans_1"),
+                            obj.getString("ans_2"),
+                            obj.getString("ans_3"),
+                            obj.getString("ans_4")
+                            )
+                    );
+
+                    question.setAnswerIndex(obj.getInt("result"));
+                    question.setHintPhrase(obj.getString("hint"));
+
+                    //mQuestionBank.add(question);
+                    mQuestionBank.add(question);
+
+                }
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+
+            return mQuestionBank;
+        }
+
+        @Override
+        protected void onPostExecute(QuestionBank questionBank) {
+            super.onPostExecute(questionBank);
+
+            mQuestionBank.shuffleQuestions();
+
+            Intent gameActivityIntent = new Intent(MenuActivity.this, GameActivity.class);
+            gameActivityIntent.putExtra("QuestionBank", mQuestionBank);
+            gameActivityIntent.putExtra("username", currentUser.getFirstName());
+            startActivityForResult(gameActivityIntent, GAME_ACTIVITY_REQUEST_CODE);
+        }
     }
 }

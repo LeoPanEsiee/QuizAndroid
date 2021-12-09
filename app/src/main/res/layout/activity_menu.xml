@@ -68,7 +68,7 @@
         app:layout_constraintTop_toBottomOf="@+id/TV_name_placeholder" />
 
     <Button
-        android:id="@+id/button_login"
+        android:id="@+id/button_menu_leaderboard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="64dp"
@@ -79,14 +79,14 @@
         android:backgroundTint="#F69226"/>
 
     <Button
-        android:id="@+id/button_start"
+        android:id="@+id/button_menu_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
         android:text="START"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_login"
+        app:layout_constraintTop_toBottomOf="@+id/button_menu_leaderboard"
         android:backgroundTint="#0B91E4"/>
 
 
