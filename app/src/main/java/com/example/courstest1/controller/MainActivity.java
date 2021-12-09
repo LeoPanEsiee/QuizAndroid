@@ -20,7 +20,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 
-import com.example.courstest1.model.InputStreamOperations;
 import com.example.courstest1.model.Question;
 import com.example.courstest1.model.QuestionBank;
 import com.example.courstest1.model.User;
@@ -30,12 +29,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
@@ -51,6 +51,8 @@ import javax.net.ssl.X509TrustManager;
 public class MainActivity extends AppCompatActivity {
     private TextView mTextViewGreeting;
     private EditText mEditTextName;
+
+    private EditText mEditTextPassword;
     private Button mButtonPlay;
 
     private String firstName;
@@ -96,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
         mTextViewGreeting = findViewById(R.id.textview_greeting);
         mEditTextName = findViewById(R.id.edittext_name);
+        mEditTextPassword = findViewById(R.id.edittext_password);
         mButtonPlay = findViewById(R.id.button_play);
 
         mButtonPlay.setEnabled(false);
@@ -148,6 +151,12 @@ public class MainActivity extends AppCompatActivity {
         new DownloadData(mQuestionBank).execute("https://10.0.2.2/getQuestions.php");
 
 
+        Button mBDD = findViewById(R.id.button_BD);
+        mBDD.setOnClickListener((view -> {
+            new CalPHP().execute(mEditTextName.getText().toString(),mEditTextPassword.getText().toString());;
+
+        }));
+
     }
 
 
@@ -192,11 +201,7 @@ public class MainActivity extends AppCompatActivity {
         String data = "";
 
         protected QuestionBank doInBackground(String... urls) {
-
-
             trustEveryone();
-
-
             String urlOfData = urls[0];
 
             QuestionBank questionBank = new QuestionBank();
@@ -211,8 +216,6 @@ public class MainActivity extends AppCompatActivity {
                     line = bufferedReader.readLine();
                     data = data + line;
                 }
-
-                //System.out.println(data);
 
                 JSONArray JA = new JSONArray(data);
                 for(int i = 0 ; i < JA.length();i++){
@@ -271,5 +274,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public static class CalPHP extends AsyncTask<String, String, String> {
 
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            URL url = null;
+            HttpURLConnection urlConnection = null;
+            try {
+                String username = params[0];
+                String password = params[1];
+                url = new URL("https://10.0.2.2/newUser.php?username="+username+"&password="+password+"");
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setDoOutput(true);
+                urlConnection.setChunkedStreamingMode(0);
+
+
+                OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
+                out.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+            }
+
+            return null;
+        }
+    }
 }

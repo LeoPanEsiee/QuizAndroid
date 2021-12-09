@@ -28,6 +28,16 @@
         android:inputType="" />
 
 
+    <EditText
+        android:id="@+id/edittext_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:hint="Entrez votre mot de passe"
+        android:inputType=""
+        android:minHeight="48dp" />
+
     <Button
         android:id="@+id/button_play"
         android:layout_width="wrap_content"
@@ -43,6 +53,14 @@
         android:layout_gravity="center_horizontal"
         android:layout_margin="16dp"
         android:text="@string/BestScore" />
+
+    <Button
+        android:id="@+id/button_BD"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="16dp"
+        android:text="BDD" />
 
 
 
