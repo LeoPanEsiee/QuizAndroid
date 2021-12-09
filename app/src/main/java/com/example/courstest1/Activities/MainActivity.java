@@ -1,5 +1,7 @@
 package com.example.courstest1.Activities;
 
+import static com.example.courstest1.model.CertificateManager.trustEveryone;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
@@ -29,24 +31,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.security.SecureRandom;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.Arrays;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.X509TrustManager;
 
 public class MainActivity extends AppCompatActivity {
     private TextView mTextViewGreeting;
@@ -66,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String SHARED_PREF_USER_INFO_NAME = "SHARED_PREF_USER_INFO_NAME";
 
 
-    QuestionBank mQuestionBank;
+    QuestionBank mQuestionBank = new QuestionBank();
 
 
 
@@ -146,14 +137,12 @@ public class MainActivity extends AppCompatActivity {
         createNotificationChannel();
 
 
-
-        mQuestionBank = new QuestionBank();
-        new DownloadData(mQuestionBank).execute("https://10.0.2.2/getQuestions.php");
+        new DownloadData().execute("https://10.0.2.2/getQuestions.php");
 
 
         Button mBDD = findViewById(R.id.button_BD);
         mBDD.setOnClickListener((view -> {
-            new CalPHP().execute(mEditTextName.getText().toString(),mEditTextPassword.getText().toString());;
+            //new DatabaseManager.CalPHP().execute(mEditTextName.getText().toString(),mEditTextPassword.getText().toString());;
 
         }));
 
@@ -187,24 +176,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     /**
      * Download async task
      * Done in background
      * Get the List of Questions
      */
-    private class DownloadData extends AsyncTask<String, Void, QuestionBank> {
-
-        DownloadData(QuestionBank questionBank) {
-            mQuestionBank = questionBank;
-        }
-        String data = "";
+    public class DownloadData extends AsyncTask<String, Void, QuestionBank> {
 
         protected QuestionBank doInBackground(String... urls) {
             trustEveryone();
             String urlOfData = urls[0];
+            String data = "";
 
-            QuestionBank questionBank = new QuestionBank();
             try{
                 URL url = new URL(urlOfData) ;
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -234,6 +217,7 @@ public class MainActivity extends AppCompatActivity {
                     question.setAnswerIndex(obj.getInt("result"));
                     question.setHintPhrase(obj.getString("hint"));
 
+                    //mQuestionBank.add(question);
                     mQuestionBank.add(question);
 
                 }
@@ -241,70 +225,15 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            return questionBank;
-        }
-
-        protected void onPostExecute(QuestionBank result) {
-        }
-    }
-
-    /**
-     * Trust all certificates in order to reach the data from the database
-     */
-    private void trustEveryone() {
-        try {
-            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier(){
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }});
-            SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new X509TrustManager[]{new X509TrustManager(){
-                public void checkClientTrusted(X509Certificate[] chain,
-                                               String authType) throws CertificateException {}
-                public void checkServerTrusted(X509Certificate[] chain,
-                                               String authType) throws CertificateException {}
-                public X509Certificate[] getAcceptedIssuers() {
-                    return new X509Certificate[0];
-                }}}, new SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(
-                    context.getSocketFactory());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    public static class CalPHP extends AsyncTask<String, String, String> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
+            return mQuestionBank;
         }
 
         @Override
-        protected String doInBackground(String... params) {
-            URL url = null;
-            HttpURLConnection urlConnection = null;
-            try {
-                String username = params[0];
-                String password = params[1];
-                url = new URL("https://10.0.2.2/newUser.php?username="+username+"&password="+password+"");
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setDoOutput(true);
-                urlConnection.setChunkedStreamingMode(0);
+        protected void onPostExecute(QuestionBank questionBank) {
+            super.onPostExecute(questionBank);
 
-
-                OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
-                out.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-            }
-
-            return null;
+            System.out.println("********"+mQuestionBank);
         }
     }
+
 }
