@@ -1,4 +1,4 @@
-package com.example.courstest1.controller;
+package com.example.courstest1.Activities;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;

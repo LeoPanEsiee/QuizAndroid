@@ -1,4 +1,4 @@
-package com.example.courstest1.controller;
+package com.example.courstest1.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,21 +21,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.courstest1.R;
-import com.example.courstest1.model.InputStreamOperations;
 import com.example.courstest1.model.Question;
 import com.example.courstest1.model.QuestionBank;
 import com.example.courstest1.model.ReminderBroadcast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.Random;
 

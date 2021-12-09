@@ -7,4 +7,11 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="quizzOrange">#F69226</color>
+    <color name="quizzBlue1">#0B91E4</color>
+    <color name="quizzBlue2">#0484E1</color>
+    <color name="quizzBlue3">#0EC0FA</color>
+
+
 </resources>
