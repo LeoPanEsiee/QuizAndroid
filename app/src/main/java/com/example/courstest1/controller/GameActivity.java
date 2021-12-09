@@ -103,6 +103,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         mGameButton4.setOnClickListener(this);
         mJockerButton.setOnClickListener(this);
 
+        Intent intent = getIntent();
+        mQuestionBank = (QuestionBank) intent.getSerializableExtra("QuestionBank");
+
         mCurrentQuestion = mQuestionBank.getCurrentQuestion();
         displayQuestion(mCurrentQuestion);
 
@@ -112,7 +115,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             mRemainingQuestionCount = savedInstanceState.getInt(BUNDLE_STATE_QUESTION);
             mScore = savedInstanceState.getInt(BUNDLE_STATE_SCORE);
         }else{
-            mRemainingQuestionCount = 2;
+            mRemainingQuestionCount = 15;
             mScore = 0;
         }
 

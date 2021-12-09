@@ -79,3 +79,7 @@ fastlane/readme.md
 *.lock
 *.bin
 *.lock
+.gradle/7.0.2/executionHistory/executionHistory.bin
+*.lock
+*.bin
+*.lock

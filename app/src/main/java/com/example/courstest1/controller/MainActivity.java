@@ -64,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
     private static final String SHARED_PREF_USER_INFO_NAME = "SHARED_PREF_USER_INFO_NAME";
 
 
+    QuestionBank mQuestionBank;
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -125,12 +128,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mButtonPlay.setOnClickListener((view)->{
+            mQuestionBank.shuffleQuestions();
             getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
                     .edit()
                     .putString(SHARED_PREF_USER_INFO_NAME, mEditTextName.getText().toString())
                     .apply();
 
             Intent gameActivityIntent = new Intent(MainActivity.this, GameActivity.class);
+            gameActivityIntent.putExtra("QuestionBank", mQuestionBank);
             startActivityForResult(gameActivityIntent, GAME_ACTIVITY_REQUEST_CODE);
         });
 
@@ -139,8 +144,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        QuestionBank questionBank = new QuestionBank();
-        new DownloadData(questionBank).execute("https://10.0.2.2/getQuestions.php");
+        mQuestionBank = new QuestionBank();
+        new DownloadData(mQuestionBank).execute("https://10.0.2.2/getQuestions.php");
 
 
     }
@@ -162,6 +167,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Top String to display the user's info
+     */
     private void displayUserInfo(){
         if(user.getFirstName() != null){
             mTextViewGreeting.setText(getString(R.string.WelcomeBack) + user.getFirstName() + "\n" +
@@ -171,11 +179,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Download async task
+     * Done in background
+     * Get the List of Questions
+     */
     private class DownloadData extends AsyncTask<String, Void, QuestionBank> {
-        QuestionBank imageView;
 
-        DownloadData(QuestionBank imageView) {
-            this.imageView = imageView;
+        DownloadData(QuestionBank questionBank) {
+            mQuestionBank = questionBank;
         }
         String data = "";
 
@@ -191,8 +203,6 @@ public class MainActivity extends AppCompatActivity {
             try{
                 URL url = new URL(urlOfData) ;
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-                //connection.connect();
                 InputStream inputStream = connection.getInputStream();
 
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
@@ -221,15 +231,10 @@ public class MainActivity extends AppCompatActivity {
                     question.setAnswerIndex(obj.getInt("result"));
                     question.setHintPhrase(obj.getString("hint"));
 
-                    questionBank.add(question);
+                    mQuestionBank.add(question);
 
-                    System.out.println(question);
                 }
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
 
@@ -237,10 +242,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(QuestionBank result) {
-            //imageView.setImageBitmap(result);
         }
     }
 
+    /**
+     * Trust all certificates in order to reach the data from the database
+     */
     private void trustEveryone() {
         try {
             HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier(){
@@ -258,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
                 }}}, new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(
                     context.getSocketFactory());
-        } catch (Exception e) { // should never happen
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

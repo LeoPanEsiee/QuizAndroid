@@ -18,8 +18,6 @@ public class QuestionBank implements Serializable {
 
     public QuestionBank() {
         mQuestionList = new ArrayList<>();
-
-        Collections.shuffle(mQuestionList);
     }
 
     public Question getCurrentQuestion() {
@@ -37,5 +35,18 @@ public class QuestionBank implements Serializable {
 
     public void add(Question question){
         mQuestionList.add(question);
+    }
+
+    @Override
+    public String toString() {
+        String str = "";
+        for(Question q : mQuestionList){
+            str += mQuestionIndex + " " + q + "\n";
+        }
+        return str;
+    }
+
+    public void shuffleQuestions(){
+        Collections.shuffle(mQuestionList);
     }
 }
