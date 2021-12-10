@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Random;
 
@@ -71,7 +72,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mTextViewTimer;
     private CountDownTimer mCountDownTimer;
     private boolean mTimerRunning;
-    private static final long START_TIME_IN_MS = 30 * 1000;
+    //private static final long START_TIME_IN_MS = 30 * 1000;
+    private static final long START_TIME_IN_MS = 10 * 1000;
     private long mTimeLeftInMs = START_TIME_IN_MS;
 
     //Used for playing sounds
@@ -105,8 +107,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         mJockerButton.setOnClickListener(this);
 
         Intent intent = getIntent();
-        mQuestionBank = (QuestionBank) intent.getSerializableExtra("QuestionBank");
-
+        //mQuestionBank = (QuestionBank) intent.getSerializableExtra("QuestionBank");
+        mQuestionBank = generateQuestions();
         mCurrentQuestion = mQuestionBank.getCurrentQuestion();
         displayQuestion(mCurrentQuestion);
 
@@ -240,7 +242,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
      * Question Bank
      * @return QuestionBank the list of questions available
      */
-    /*
+
     private QuestionBank generateQuestions(){
         Question question1 = new Question(
                 "Who is the creator of Android?",
@@ -282,7 +284,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
         return new QuestionBank(Arrays.asList(question1, question2, question3));
     }
-    */
+
 
 
     /**

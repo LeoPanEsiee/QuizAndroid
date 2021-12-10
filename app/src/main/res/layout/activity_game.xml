@@ -42,6 +42,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
+        app:backgroundTint="@color/quizzOrange"
         app:layout_constraintTop_toBottomOf="@+id/game_activity_textview_countdown_timer"
         tools:text="Question?" />
 
@@ -59,6 +60,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
+        app:backgroundTint="@color/quizzBlue1"
         tools:text="Answer1" />
 
     <Button
@@ -73,6 +75,7 @@
         app:layout_constraintBottom_toTopOf="@+id/game_activity_button_3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:backgroundTint="@color/quizzBlue1"
         tools:text="Answer2" />
 
     <Button
@@ -87,7 +90,7 @@
         app:layout_constraintBottom_toTopOf="@+id/game_activity_button_4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:backgroundTint="@color/purple_500"
+        app:backgroundTint="@color/quizzBlue1"
         tools:text="Answer3" />
 
     <Button
@@ -103,6 +106,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
+        app:backgroundTint="@color/quizzBlue1"
         tools:text="Answer4" />
 
     <ImageButton
@@ -114,7 +118,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/game_activity_button_4"
         app:srcCompat="@mipmap/ic_joker"
-        tools:ignore="ImageContrastCheck" />
+        tools:ignore="ImageContrastCheck"
+        app:backgroundTint="@color/white"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

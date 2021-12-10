@@ -20,15 +20,20 @@
 
     <string name="BestScore">Best Score</string>
     <string name="JokerButton">Jocker Button</string>
-    <string name="title_activity_login">LoginActivity</string>
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome !"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
+
+    <string name="register">REGISTER</string>
+    <string name="login">LOGIN</string>
+    <string name="topquizzlogo" translatable="false">TopQuizzLogo</string>
+    <string name="register_a_new_account">Register a new account</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="log_into_your_account">Log into your account</string>
+    <string name="main_menu">Main menu</string>
+    <string name="player_name_placeholder">Player name placeholder</string>
+    <string name="your_current_score_is_0">Your current score is : 0</string>
+    <string name="leaderboard">Leaderboard</string>
+    <string name="start">START</string>
 
 
 </resources>

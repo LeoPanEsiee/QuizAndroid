@@ -15,4 +15,16 @@
     <string name="MoonLanding">Quand le premier homme a-t-il atterri sur la lune ?</string>
     <string name="BestScore">Meilleur score</string>
     <string name="JokerButton">Bouton Jocker</string>
+    <string name="register">INSCRIPTION</string>
+    <string name="login">CONNEXION</string>
+    <string name="register_a_new_account">Créer un nouveau compte</string>
+    <string name="username">Nom d\'utilisateur</string>
+    <string name="password">Mot de passe</string>
+    <string name="confirm_password">Confirmer</string>
+    <string name="log_into_your_account">Se connecter</string>
+    <string name="main_menu">Menu principal</string>
+    <string name="player_name_placeholder">Nom du joueur temp</string>
+    <string name="your_current_score_is_0">Votre score actuel est : 0</string>
+    <string name="leaderboard">Meilleurs Scores</string>
+    <string name="start">DEMARRER</string>
 </resources>

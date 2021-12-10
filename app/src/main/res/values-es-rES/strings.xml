@@ -15,4 +15,16 @@
     <string name="SimpsonsNumber">¿Cuál es el número de la casa de Los Simpson?</string>
     <string name="BestScore">Mejor puntuación</string>
     <string name="JokerButton">Botón del suspensorio</string>
+    <string name="register">REGISTRARSE</string>
+    <string name="start">INICIO</string>
+    <string name="leaderboard">Tabla de clasificación</string>
+    <string name="your_current_score_is_0">Su puntuación actual es : 0</string>
+    <string name="player_name_placeholder">Marcador de posición del nombre del jugador</string>
+    <string name="main_menu">Menú principal</string>
+    <string name="log_into_your_account">Acceda a su cuenta</string>
+    <string name="confirm_password">Confirmar contraseña</string>
+    <string name="password">Contraseña</string>
+    <string name="username">Nombre de usuario</string>
+    <string name="register_a_new_account">Registrar una nueva cuenta</string>
+    <string name="login">LOGIN</string>
 </resources>
