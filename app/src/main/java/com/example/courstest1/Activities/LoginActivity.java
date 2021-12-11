@@ -24,6 +24,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
+
 public class LoginActivity extends AppCompatActivity {
 
     EditText mEditTextLoginUsername;
@@ -59,7 +61,9 @@ public class LoginActivity extends AppCompatActivity {
             usernameString = mEditTextLoginUsername.getText().toString();
             passwordString = mEditTextLoginPassword.getText().toString();
 
-            new CheckLogin(getApplicationContext()).execute("http://109.221.187.188:8005/login.php?username=" + usernameString +"&password="+passwordString);
+
+            String hashedPassword = BCrypt.withDefaults().hashToString(12, passwordString.toCharArray());
+            new CheckLogin(getApplicationContext()).execute("http://109.221.187.188:8005/login.php?username=" + usernameString +"&password="+hashedPassword);
         });
     }
 

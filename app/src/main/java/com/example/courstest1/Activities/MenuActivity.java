@@ -35,6 +35,8 @@ public class MenuActivity extends AppCompatActivity {
     TextView TextView_name_placeholder;
     TextView TextView_score_placeholder;
 
+    String username;
+
 
     private static final int GAME_ACTIVITY_REQUEST_CODE = 42;
 
@@ -51,14 +53,15 @@ public class MenuActivity extends AppCompatActivity {
 
 
         Intent intent = getIntent();
-        String username = intent.getStringExtra("username");
+        username = intent.getStringExtra("username");
+        currentUser.setFirstName(username);
 
         TextView_name_placeholder = findViewById(R.id.TV_name_placeholder);
         TextView_name_placeholder.setText("Welcome back " + username);
 
 
         TextView_score_placeholder = findViewById(R.id.TV_score_placeholder);
-        new DownloadUser().execute("https://109.221.187.188:8005/getScore.php?username=" + username);
+        new DownloadUser().execute("http://109.221.187.188:8005/getScore.php?username=" + username);
 
 
 
@@ -69,11 +72,17 @@ public class MenuActivity extends AppCompatActivity {
 
         findViewById(R.id.button_menu_start).setOnClickListener(view -> {
 
-            new DownloadQuestions().execute("https://109.221.187.188:8005/getQuestions.php");
+            new DownloadQuestions().execute("http://109.221.187.188:8005/getQuestions.php");
         });
 
 
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        new DownloadUser().execute("http://109.221.187.188:8005/getScore.php?username=" + username);
     }
 
     public class DownloadUser extends AsyncTask<String, Void, Void> {

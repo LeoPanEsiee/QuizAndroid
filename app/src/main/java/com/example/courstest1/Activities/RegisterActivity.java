@@ -23,6 +23,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
+
 public class RegisterActivity extends AppCompatActivity {
 
 
@@ -142,7 +144,10 @@ public class RegisterActivity extends AppCompatActivity {
             try {
                 String username = params[0];
                 String password = params[1];
-                url = new URL("https://109.221.187.188:8005/newUser.php?username="+username+"&password="+password+"");
+
+                String hashedPassword = BCrypt.withDefaults().hashToString(12, password.toCharArray());
+
+                url = new URL("http://109.221.187.188:8005/newUser.php?username="+username+"&password="+hashedPassword+"");
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setDoOutput(true);
                 urlConnection.setChunkedStreamingMode(0);
