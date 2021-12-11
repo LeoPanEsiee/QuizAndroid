@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+
+    <TextView
+        android:id="@+id/game_activity_textview_countdown_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginTop="48dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="00:00"
+        android:textColor="@color/black"
+        android:textSize="64sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/game_activity_textview_question"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_margin="8dp"
+        android:layout_marginTop="48dp"
+        android:layout_weight="3"
+        android:background="@color/teal_700"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:backgroundTint="@color/quizzOrange"
+        app:layout_constraintTop_toBottomOf="@+id/game_activity_textview_countdown_timer"
+        tools:text="Question?" />
+
+    <Button
+        android:id="@+id/game_activity_button_1"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="8dp"
+        android:layout_weight="1"
+        android:padding="16dp"
+        android:textSize="20sp"
+        app:backgroundTint="@color/quizzBlue1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/game_activity_textview_question"
+        tools:text="Answer1" />
+
+    <Button
+        android:id="@+id/game_activity_button_2"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="8dp"
+        android:layout_weight="1"
+        android:padding="16dp"
+        android:textSize="20sp"
+        app:backgroundTint="@color/quizzBlue1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/game_activity_button_1"
+        tools:text="Answer2" />
+
+    <Button
+        android:id="@+id/game_activity_button_3"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="8dp"
+        android:layout_weight="1"
+        android:padding="16dp"
+        android:textSize="20sp"
+        app:backgroundTint="@color/quizzBlue1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/game_activity_textview_question"
+        tools:text="Answer3" />
+
+    <Button
+        android:id="@+id/game_activity_button_4"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="8dp"
+        android:layout_weight="1"
+        android:padding="16dp"
+        android:textSize="20sp"
+        app:backgroundTint="@color/quizzBlue1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/game_activity_button_3"
+        tools:text="Answer4" />
+
+    <ImageButton
+        android:id="@+id/game_activity_jocker_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/JokerButton"
+        app:backgroundTint="@color/white"
+        android:layout_margin="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/game_activity_button_4"
+        app:layout_constraintStart_toEndOf="@+id/game_activity_button_2"
+        app:srcCompat="@mipmap/ic_joker"
+        tools:ignore="ImageContrastCheck" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+

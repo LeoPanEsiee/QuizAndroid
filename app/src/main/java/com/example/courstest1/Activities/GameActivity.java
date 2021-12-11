@@ -72,7 +72,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mTextViewTimer;
     private CountDownTimer mCountDownTimer;
     private boolean mTimerRunning;
-    //private static final long START_TIME_IN_MS = 30 * 1000;
     private static final long START_TIME_IN_MS = 10 * 1000;
     private long mTimeLeftInMs = START_TIME_IN_MS;
 
@@ -107,8 +106,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         mJockerButton.setOnClickListener(this);
 
         Intent intent = getIntent();
-        //mQuestionBank = (QuestionBank) intent.getSerializableExtra("QuestionBank");
-        mQuestionBank = generateQuestions();
+        mQuestionBank = (QuestionBank) intent.getSerializableExtra("QuestionBank");
+        //mQuestionBank = generateQuestions();
         mCurrentQuestion = mQuestionBank.getCurrentQuestion();
         displayQuestion(mCurrentQuestion);
 
@@ -118,7 +117,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             mRemainingQuestionCount = savedInstanceState.getInt(BUNDLE_STATE_QUESTION);
             mScore = savedInstanceState.getInt(BUNDLE_STATE_SCORE);
         }else{
-            mRemainingQuestionCount = 2;
+            mRemainingQuestionCount = 5;
             mScore = 3;
         }
 
@@ -368,7 +367,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             for(int i=0;i<4;i++){
             liste[i].setVisibility(View.VISIBLE);}
             mJokerPress = 0;
-            liste[mQuestionBank.getCurrentQuestion().getAnswerIndex()].setBackgroundColor(Color.parseColor("#6200ee"));
+            liste[mQuestionBank.getCurrentQuestion().getAnswerIndex()].setBackgroundColor(Color.parseColor("#0B91E4"));
             mRemainingQuestionCount--;
 
             if (mRemainingQuestionCount > 0) {

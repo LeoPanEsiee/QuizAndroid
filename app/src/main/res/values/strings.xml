@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CoursTest1</string>
+    <string name="app_name">TopQuizz</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="next">Next</string>
@@ -30,8 +30,8 @@
     <string name="confirm_password">Confirm password</string>
     <string name="log_into_your_account">Log into your account</string>
     <string name="main_menu">Main menu</string>
-    <string name="player_name_placeholder">Player name placeholder</string>
-    <string name="your_current_score_is_0">Your current score is : 0</string>
+    <string name="player_name_placeholder">"Welcome : "</string>
+    <string name="your_current_score_is_0">"Your current score is : "</string>
     <string name="leaderboard">Leaderboard</string>
     <string name="start">START</string>
 

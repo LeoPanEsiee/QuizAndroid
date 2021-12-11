@@ -23,8 +23,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-import at.favre.lib.crypto.bcrypt.BCrypt;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -57,13 +59,24 @@ public class LoginActivity extends AppCompatActivity {
         mButtonValidateLogin.setEnabled(false);
         activateButton();
 
+
         mButtonValidateLogin.setOnClickListener(view -> {
             usernameString = mEditTextLoginUsername.getText().toString();
             passwordString = mEditTextLoginPassword.getText().toString();
 
+            StringBuilder hashedPassword = new StringBuilder();
 
-            String hashedPassword = BCrypt.withDefaults().hashToString(12, passwordString.toCharArray());
-            new CheckLogin(getApplicationContext()).execute("http://109.221.187.188:8005/login.php?username=" + usernameString +"&password="+hashedPassword);
+            try {
+                MessageDigest msg = MessageDigest.getInstance("SHA-256");
+                byte[] hash = msg.digest(passwordString.getBytes(StandardCharsets.UTF_8));
+                for (byte b : hash) {
+                    hashedPassword.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
+                }
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+
+            new CheckLogin(getApplicationContext()).execute("http://109.221.187.188:8005/login.php?username=" + usernameString + "&password=" + hashedPassword);
         });
     }
 

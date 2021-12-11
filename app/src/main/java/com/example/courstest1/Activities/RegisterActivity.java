@@ -22,12 +22,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 
 public class RegisterActivity extends AppCompatActivity {
-
-
+    
     private Button mButtonValidateRegister;
 
     private EditText mEditTextRegisterUsername;
@@ -145,7 +147,15 @@ public class RegisterActivity extends AppCompatActivity {
                 String username = params[0];
                 String password = params[1];
 
-                String hashedPassword = BCrypt.withDefaults().hashToString(12, password.toCharArray());
+                StringBuilder hashedPassword = new StringBuilder();
+
+                try {
+                    MessageDigest msg = MessageDigest.getInstance("SHA-256");
+                    byte[] hash = msg.digest(password.getBytes(StandardCharsets.UTF_8));
+                    for (byte b : hash) {hashedPassword.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));}
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
 
                 url = new URL("http://109.221.187.188:8005/newUser.php?username="+username+"&password="+hashedPassword+"");
                 urlConnection = (HttpURLConnection) url.openConnection();

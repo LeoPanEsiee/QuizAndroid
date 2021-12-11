@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Locale;
 
 public class MenuActivity extends AppCompatActivity {
 
@@ -57,10 +58,10 @@ public class MenuActivity extends AppCompatActivity {
         currentUser.setFirstName(username);
 
         TextView_name_placeholder = findViewById(R.id.TV_name_placeholder);
-        TextView_name_placeholder.setText("Welcome back " + username);
+        String welcomeMessage = TextView_name_placeholder.getText().toString();
+        TextView_name_placeholder.setText(welcomeMessage + username);
 
 
-        TextView_score_placeholder = findViewById(R.id.TV_score_placeholder);
         new DownloadUser().execute("http://109.221.187.188:8005/getScore.php?username=" + username);
 
 
@@ -72,7 +73,7 @@ public class MenuActivity extends AppCompatActivity {
 
         findViewById(R.id.button_menu_start).setOnClickListener(view -> {
 
-            new DownloadQuestions().execute("http://109.221.187.188:8005/getQuestions.php");
+            new DownloadQuestions().execute("http://109.221.187.188:8005/getQuestions"+Locale.getDefault().getLanguage()+".php");
         });
 
 
@@ -113,7 +114,9 @@ public class MenuActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void unused) {
             super.onPostExecute(unused);
-            TextView_score_placeholder.setText("Your current score is : "+currentUser.getScore());
+            TextView_score_placeholder = findViewById(R.id.TV_score_placeholder);
+            String str = TextView_score_placeholder.getText().toString();
+            TextView_score_placeholder.setText(str+currentUser.getScore());
         }
     }
 

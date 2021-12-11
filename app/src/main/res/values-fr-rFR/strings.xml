@@ -23,8 +23,8 @@
     <string name="confirm_password">Confirmer</string>
     <string name="log_into_your_account">Se connecter</string>
     <string name="main_menu">Menu principal</string>
-    <string name="player_name_placeholder">Nom du joueur temp</string>
-    <string name="your_current_score_is_0">Votre score actuel est : 0</string>
+    <string name="player_name_placeholder">"Bienvenue : "</string>
+    <string name="your_current_score_is_0">"Votre score actuel est : "</string>
     <string name="leaderboard">Meilleurs Scores</string>
     <string name="start">DEMARRER</string>
 </resources>
