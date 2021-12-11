@@ -17,6 +17,12 @@
         <activity
             android:name=".Activities.LaunchActivity"
             android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <activity
@@ -35,11 +41,6 @@
             android:theme="@style/Theme.CoursTest1.NoActionBar"
             >
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
 
         </activity>
 

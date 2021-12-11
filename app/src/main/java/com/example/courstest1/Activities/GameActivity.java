@@ -530,7 +530,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 String username = params[0];
                 String score = params[1];
                 System.out.println("Inserting " + username + " " + score);
-                url = new URL("https://10.0.2.2/updateScore.php?username="+username+"&score="+score+"");
+                url = new URL("https://109.221.187.188:8005/updateScore.php?username="+username+"&score="+score+"");
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setDoOutput(true);
                 urlConnection.setChunkedStreamingMode(0);

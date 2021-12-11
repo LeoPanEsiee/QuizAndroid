@@ -142,7 +142,7 @@ public class RegisterActivity extends AppCompatActivity {
             try {
                 String username = params[0];
                 String password = params[1];
-                url = new URL("https://10.0.2.2/newUser.php?username="+username+"&password="+password+"");
+                url = new URL("https://109.221.187.188:8005/newUser.php?username="+username+"&password="+password+"");
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setDoOutput(true);
                 urlConnection.setChunkedStreamingMode(0);

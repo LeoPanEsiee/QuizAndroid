@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
             usernameString = mEditTextLoginUsername.getText().toString();
             passwordString = mEditTextLoginPassword.getText().toString();
 
-            new CheckLogin(getApplicationContext()).execute("https://10.0.2.2/login.php?username=" + usernameString +"&password="+passwordString);
+            new CheckLogin(getApplicationContext()).execute("http://109.221.187.188:8005/login.php?username=" + usernameString +"&password="+passwordString);
         });
     }
 

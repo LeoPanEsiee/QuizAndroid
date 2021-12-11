@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         createNotificationChannel();
 
 
-        new DownloadData().execute("https://10.0.2.2/getQuestions.php");
+        new DownloadData().execute("https://109.221.187.188:8005/getQuestions.php");
 
 
         Button mBDD = findViewById(R.id.button_BD);

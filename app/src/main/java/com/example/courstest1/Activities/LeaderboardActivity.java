@@ -50,7 +50,7 @@ public class LeaderboardActivity extends AppCompatActivity {
 
 
 
-        new GetLeaderboard().execute("https://10.0.2.2/top10.php");
+        new GetLeaderboard().execute("https://109.221.187.188:8005/top10.php");
 
     }
 

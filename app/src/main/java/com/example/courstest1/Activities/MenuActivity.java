@@ -58,7 +58,7 @@ public class MenuActivity extends AppCompatActivity {
 
 
         TextView_score_placeholder = findViewById(R.id.TV_score_placeholder);
-        new DownloadUser().execute("https://10.0.2.2/getScore.php?username=" + username);
+        new DownloadUser().execute("https://109.221.187.188:8005/getScore.php?username=" + username);
 
 
 
@@ -69,7 +69,7 @@ public class MenuActivity extends AppCompatActivity {
 
         findViewById(R.id.button_menu_start).setOnClickListener(view -> {
 
-            new DownloadQuestions().execute("https://10.0.2.2/getQuestions.php");
+            new DownloadQuestions().execute("https://109.221.187.188:8005/getQuestions.php");
         });
 
 
