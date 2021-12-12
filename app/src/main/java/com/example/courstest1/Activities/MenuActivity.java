@@ -105,8 +105,6 @@ public class MenuActivity extends AppCompatActivity {
                 data = bufferedReader.readLine();
                 currentUser.setScore(Integer.parseInt(data));
 
-
-
             } catch (IOException e) {
                 e.printStackTrace();
             }

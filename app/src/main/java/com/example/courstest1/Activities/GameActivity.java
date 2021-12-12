@@ -3,15 +3,19 @@ package com.example.courstest1.Activities;
 import static com.example.courstest1.model.CertificateManager.trustEveryone;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -29,7 +33,10 @@ import com.example.courstest1.model.QuestionBank;
 import com.example.courstest1.model.ReminderBroadcast;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -57,6 +64,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     public static final String BUNDLE_STATE_QUESTION = "BUNDLE_STATE_QUESTION";
     public static final String BUNDLE_STATE_QUESTION_BANK = "BUNDLE_STATE_QUESTION_BANK";
     public static final String BUNDLE_STATE_CURRENT_QUESTION = "BUNDLE_STATE_CURRENT_QUESTION";
+    public static final String BUNDLE_STATE_TIMER_RUNNING = "BUNDLE_STATE_TIMER_RUNNING";
+    public static final String BUNDLE_STATE_CURRENT_TIMER_MS = "BUNDLE_STATE_CURRENT_TIMER_MS";
 
     //Jokers
     private int mJokerPress;
@@ -72,7 +81,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mTextViewTimer;
     private CountDownTimer mCountDownTimer;
     private boolean mTimerRunning;
-    private static final long START_TIME_IN_MS = 10 * 1000;
+    private static final long START_TIME_IN_MS = 20 * 1000;
     private long mTimeLeftInMs = START_TIME_IN_MS;
 
     //Used for playing sounds
@@ -82,6 +91,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     String username;
 
 
+
     /**
      * On creation of the activity
      * @param savedInstanceState saved instance
@@ -89,27 +99,24 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        System.out.println("ON CREATE");
+
         setContentView(R.layout.activity_game);
 
 
         mTextViewQuestion = findViewById(R.id.game_activity_textview_question);
-        mGameButton1 = findViewById(R.id.game_activity_button_1);
-        mGameButton2 = findViewById(R.id.game_activity_button_2);
-        mGameButton3 = findViewById(R.id.game_activity_button_3);
-        mGameButton4 = findViewById(R.id.game_activity_button_4);
-        mJockerButton = findViewById(R.id.game_activity_jocker_button);
 
-        mGameButton1.setOnClickListener(this);
-        mGameButton2.setOnClickListener(this);
-        mGameButton3.setOnClickListener(this);
-        mGameButton4.setOnClickListener(this);
-        mJockerButton.setOnClickListener(this);
+        gettingViews();
 
         Intent intent = getIntent();
         mQuestionBank = (QuestionBank) intent.getSerializableExtra("QuestionBank");
         //mQuestionBank = generateQuestions();
         mCurrentQuestion = mQuestionBank.getCurrentQuestion();
         displayQuestion(mCurrentQuestion);
+
+
+        createNotificationChannel();
 
         mEnableTouchEvents = true;
 
@@ -123,6 +130,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
 
         mTextViewTimer = findViewById(R.id.game_activity_textview_countdown_timer);
+
+
         startTimer();
 
 
@@ -135,6 +144,25 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         username = getIntent().getStringExtra("username");
     }
 
+
+    private void gettingViews(){
+
+        mGameButton1 = findViewById(R.id.game_activity_button_1);
+        mGameButton2 = findViewById(R.id.game_activity_button_2);
+        mGameButton3 = findViewById(R.id.game_activity_button_3);
+        mGameButton4 = findViewById(R.id.game_activity_button_4);
+        mJockerButton = findViewById(R.id.game_activity_jocker_button);
+
+        mGameButton1.setOnClickListener(this);
+        mGameButton2.setOnClickListener(this);
+        mGameButton3.setOnClickListener(this);
+        mGameButton4.setOnClickListener(this);
+        mJockerButton.setOnClickListener(this);
+    }
+
+
+
+
     /**
      * For app rotation
      * We'll save the current game information to use them when the rotation is over
@@ -142,12 +170,16 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
      */
     @Override
     protected void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
+        System.out.println("ON SAVE");
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putInt(BUNDLE_STATE_SCORE, mScore);
         savedInstanceState.putInt(BUNDLE_STATE_QUESTION, mRemainingQuestionCount);
 
         savedInstanceState.putSerializable(BUNDLE_STATE_QUESTION_BANK, mQuestionBank);
         savedInstanceState.putSerializable(BUNDLE_STATE_CURRENT_QUESTION, mCurrentQuestion);
+
+        savedInstanceState.putSerializable(BUNDLE_STATE_TIMER_RUNNING, mTimerRunning);
+        savedInstanceState.putSerializable(BUNDLE_STATE_CURRENT_TIMER_MS, mTimeLeftInMs);
     }
 
     /**
@@ -157,7 +189,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
      */
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
+        System.out.println("ON RESTORE");
         super.onRestoreInstanceState(savedInstanceState);
+
+        gettingViews();
 
         mScore = savedInstanceState.getInt(BUNDLE_STATE_SCORE);
         mRemainingQuestionCount = savedInstanceState.getInt(BUNDLE_STATE_QUESTION);
@@ -165,6 +200,17 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         mQuestionBank = (QuestionBank) savedInstanceState.getSerializable(BUNDLE_STATE_QUESTION_BANK);
         mCurrentQuestion = (Question) savedInstanceState.getSerializable(BUNDLE_STATE_CURRENT_QUESTION);
         displayQuestion(mCurrentQuestion);
+        mTimerRunning = (boolean) savedInstanceState.getSerializable(BUNDLE_STATE_TIMER_RUNNING);
+        mTimeLeftInMs = (long) savedInstanceState.getSerializable(BUNDLE_STATE_CURRENT_TIMER_MS);
+
+        if(mTimerRunning){
+            mTimerRunning = false;
+
+            mCountDownTimer.cancel();
+            mCountDownTimer = null;
+            //endingBackgroundTasks();
+            startTimer();
+        }
     }
 
     //NOTIFICATIONS
@@ -175,10 +221,13 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
      */
     @Override
     protected void onPause() {
+        System.out.println("ON PAUSE");
         super.onPause();
         if(mRemainingQuestionCount>0){
             wasInBackground = true;
+            //endingBackgroundTasks();
             startingNotificationTimer();
+            //stopSound();
         }
     }
 
@@ -188,8 +237,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
      */
     @Override
     protected void onResume() {
+        System.out.println("ON RESUME");
         super.onResume();
         if (wasInBackground) {
+            gettingViews();
             wasInBackground = false;
             //stop notification timer
             alarmManager.cancel(pendingIntent);
@@ -201,24 +252,37 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
      * Starting a timer of x seconds and send a notification to the user at the end of the timer
      */
     private void startingNotificationTimer(){
-        Toast.makeText(this, "Pressed reminder", Toast.LENGTH_SHORT).show();
-
         Intent intent = new Intent(GameActivity.this, ReminderBroadcast.class);
-        pendingIntent = PendingIntent.getBroadcast(GameActivity.this,0, intent,0);
+        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),1253, intent,0);
 
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
         long timeAtButtonClick = System.currentTimeMillis();
 
-        long duration = 5 * 3;
+        long duration = 5 * 1000;
 
         alarmManager.set(AlarmManager.RTC_WAKEUP,
                 timeAtButtonClick + duration,
                 pendingIntent);
     }
 
+    private void createNotificationChannel(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            CharSequence name = "QuestQuizz";
+            String description = "quizz description";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("myChannelId", name, importance);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+    }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
+        System.out.println("Dispatch");
         return mEnableTouchEvents && super.dispatchTouchEvent(ev);
     }
 
@@ -359,9 +423,17 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
+        //endingBackgroundTasks();
         mTimerRunning = false;
-        mCountDownTimer.cancel();
-        mEnableTouchEvents = false;
+        try{
+
+            mCountDownTimer.cancel();
+            mCountDownTimer = null;
+        }catch(NullPointerException e){
+            System.out.println(e);
+        }
+        //stopSound();
+
 
         new Handler().postDelayed(() -> {
             for(int i=0;i<4;i++){
@@ -383,7 +455,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 endGame();
 
             }
-            mEnableTouchEvents = true;
+            //mEnableTouchEvents = true;
         }, 2000);
     }
 
@@ -406,7 +478,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 .create()
                 .show();
 
-
         new UpdatingScore().execute(username, String.valueOf(mScore));
     }
 
@@ -418,24 +489,28 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
      * When timer runs, the answer is incorrect
      */
     private void startTimer(){
-        mCountDownTimer = new CountDownTimer(mTimeLeftInMs, 1000) {
-            @Override
-            public void onTick(long l) {
-                mTimeLeftInMs = l;
-                updateCountDownText();
-                //System.out.println(mTimeLeftInMs);
-                if(mTimeLeftInMs > 7.5 * 1000 && mTimeLeftInMs < 9 * 1000){
-                    playSound(R.raw.tick_sounds);
-                }
-            }
+        if(!mTimerRunning){
+            mCountDownTimer = new CountDownTimer(mTimeLeftInMs, 1000) {
+                @Override
+                public void onTick(long l) {
+                    mTimeLeftInMs = l;
+                    updateCountDownText();
 
-            @Override
-            public void onFinish() {
-                mTimerRunning = false;
-                correction(false);
-            }
-        }.start();
-        mTimerRunning = true;
+                    if(mTimeLeftInMs > 7.5 * 1000 && mTimeLeftInMs < 9 * 1000){
+                        playSound(R.raw.tick_sounds);
+                    }
+                }
+
+                @Override
+                public void onFinish() {
+                    mTimerRunning = false;
+                    correction(false);
+                }
+            }.start();
+
+
+            mTimerRunning = true;
+        }
     }
 
 
@@ -474,6 +549,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onStop() {
+
+        System.out.println("ON STOP");
         super.onStop();
         stopSound();
     }
@@ -497,7 +574,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 .create()
                 .show();
 
-        endingBackgroundTasks();
+        //endingBackgroundTasks();
+        mCountDownTimer.cancel();
+        mCountDownTimer = null;
         new UpdatingScore().execute(username, String.valueOf(mScore));
     }
 
@@ -505,18 +584,24 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
      * For forfeit
      * Ending all background tasks
      */
+    /*
     private void endingBackgroundTasks(){
-        stopSound();
-
-        mTimerRunning = false;
+        if(mTimeLeftInMs < 9 * 1000){
+            stopSound();
+        }
         mCountDownTimer.cancel();
         mEnableTouchEvents = false;
     }
+    */
+
+        int DB_score = 0;
 
     public class UpdatingScore extends AsyncTask<String, String, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+
+            new GetScore().execute("http://109.221.187.188:8005/getScore.php?username=" + username);
         }
 
         @Override
@@ -528,15 +613,19 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             try {
                 String username = params[0];
                 String score = params[1];
-                System.out.println("Inserting " + username + " " + score);
-                url = new URL("http://109.221.187.188:8005/updateScore.php?username="+username+"&score="+score+"");
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setDoOutput(true);
-                urlConnection.setChunkedStreamingMode(0);
+
+                if(DB_score < Integer.parseInt(score)){
+                    url = new URL("http://109.221.187.188:8005/updateScore.php?username="+username+"&score="+score+"");
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setDoOutput(true);
+                    urlConnection.setChunkedStreamingMode(0);
 
 
-                OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
-                out.flush();
+                    OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
+                    out.flush();
+                }
+
+
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -548,6 +637,35 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             return null;
         }
 
+    }
+
+    public class GetScore extends AsyncTask<String, Void, Void> {
+
+        protected Void doInBackground(String... urls) {
+            trustEveryone();
+            String urlOfData = urls[0];
+            String data = "";
+
+            try{
+                URL url = new URL(urlOfData) ;
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                InputStream inputStream = connection.getInputStream();
+
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                data = bufferedReader.readLine();
+                DB_score = Integer.parseInt(data);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            super.onPostExecute(unused);
+        }
     }
 
 

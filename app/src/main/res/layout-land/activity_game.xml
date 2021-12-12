@@ -47,7 +47,7 @@
 
     <Button
         android:id="@+id/game_activity_button_1"
-        android:layout_width="300dp"
+        android:layout_width="248dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="8dp"
@@ -61,7 +61,7 @@
 
     <Button
         android:id="@+id/game_activity_button_2"
-        android:layout_width="300dp"
+        android:layout_width="248dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="8dp"
@@ -75,7 +75,7 @@
 
     <Button
         android:id="@+id/game_activity_button_3"
-        android:layout_width="300dp"
+        android:layout_width="248dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="8dp"
@@ -89,7 +89,7 @@
 
     <Button
         android:id="@+id/game_activity_button_4"
-        android:layout_width="300dp"
+        android:layout_width="248dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="8dp"
