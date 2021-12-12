@@ -57,9 +57,12 @@ public class MenuActivity extends AppCompatActivity {
         username = intent.getStringExtra("username");
         currentUser.setFirstName(username);
 
+
         TextView_name_placeholder = findViewById(R.id.TV_name_placeholder);
         String welcomeMessage = TextView_name_placeholder.getText().toString();
         TextView_name_placeholder.setText(welcomeMessage + username);
+
+        TextView_score_placeholder = findViewById(R.id.TV_score_placeholder);
 
 
         new DownloadUser().execute("http://109.221.187.188:8005/getScore.php?username=" + username);
@@ -114,8 +117,18 @@ public class MenuActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void unused) {
             super.onPostExecute(unused);
-            TextView_score_placeholder = findViewById(R.id.TV_score_placeholder);
-            String str = TextView_score_placeholder.getText().toString();
+            String lang = Locale.getDefault().getLanguage();
+            String str ="";
+            switch(lang){
+                case "fr":
+                    str = "Votre score actuel est : ";
+                    break;
+                case "es":
+                    str = "Su puntuación actual es : ";
+                    break;
+                default:
+                    str = "Your current score is : ";
+            }
             TextView_score_placeholder.setText(str+currentUser.getScore());
         }
     }
