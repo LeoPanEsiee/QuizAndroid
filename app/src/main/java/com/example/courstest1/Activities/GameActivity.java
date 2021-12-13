@@ -410,23 +410,21 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void correction(boolean response){
         if(response){
-            Toast.makeText(GameActivity.this, "Correct !", Toast.LENGTH_SHORT).show();
+            Toast.makeText(GameActivity.this, getString(R.string.correct), Toast.LENGTH_SHORT).show();
             mScore+=10;
             playSound(R.raw.correct_sound);
         }else{
             if(mTimerRunning){
-                Toast.makeText(GameActivity.this, "Incorrect !", Toast.LENGTH_SHORT).show();
-                playSound(R.raw.incorrect_sound);
+                Toast.makeText(GameActivity.this, getString(R.string.incorrect), Toast.LENGTH_SHORT).show();
             }else{
-                Toast.makeText(GameActivity.this, "Timeout !", Toast.LENGTH_SHORT).show();
-                playSound(R.raw.incorrect_sound);
+                Toast.makeText(GameActivity.this, getString(R.string.timeout), Toast.LENGTH_SHORT).show();
             }
+            playSound(R.raw.incorrect_sound);
         }
 
         //endingBackgroundTasks();
         mTimerRunning = false;
         try{
-
             mCountDownTimer.cancel();
             mCountDownTimer = null;
         }catch(NullPointerException e){
@@ -467,8 +465,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private void endGame(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        builder.setTitle("Well done!")
-                .setMessage("Your score is " + mScore)
+        builder.setTitle(getString(R.string.well_done))
+                .setMessage("Score :" + mScore)
                 .setPositiveButton("OK", (dialog, which) -> {
                     Intent intent = new Intent();
                     intent.putExtra(BUNDLE_EXTRA_SCORE, mScore);

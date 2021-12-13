@@ -27,4 +27,9 @@
     <string name="username">Nombre de usuario</string>
     <string name="register_a_new_account">Registrar una nueva cuenta</string>
     <string name="login">LOGIN</string>
+    <string name="correct">Correcto !</string>
+    <string name="incorrect">Incorrecto !</string>
+    <string name="timeout">Tiempo de espera !</string>
+    <string name="well_done">Bien hecho !</string>
+    <string name="Come_and_play">¡Ven a jugar! ¡Tú puedes hacerlo!</string>
 </resources>

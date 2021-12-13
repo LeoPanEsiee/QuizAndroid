@@ -27,4 +27,9 @@
     <string name="your_current_score_is_0">Votre score actuel est : </string>
     <string name="leaderboard">Meilleurs Scores</string>
     <string name="start">DEMARRER</string>
+    <string name="correct">Correct !</string>
+    <string name="incorrect">Incorrect !</string>
+    <string name="timeout">Temps écoulé !</string>
+    <string name="well_done">Bien joué !</string>
+    <string name="Come_and_play">Revenez jouer ! Vous pouvez le faire !</string>
 </resources>

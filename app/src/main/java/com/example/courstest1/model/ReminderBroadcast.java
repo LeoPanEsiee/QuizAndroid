@@ -14,7 +14,7 @@ public class ReminderBroadcast extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "myChannelId")
-                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setSmallIcon(R.drawable.topquizz)
                 .setContentTitle("TopQuizz time !")
                 .setContentText("Come and play ! You can do it !")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);

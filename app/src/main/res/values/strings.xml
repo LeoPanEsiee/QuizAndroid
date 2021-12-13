@@ -34,6 +34,11 @@
     <string name="your_current_score_is_0">Your current score is : </string>
     <string name="leaderboard">Leaderboard</string>
     <string name="start">START</string>
+    <string name="correct">Correct !</string>
+    <string name="incorrect">Incorrect !</string>
+    <string name="timeout">Timeout !</string>
+    <string name="well_done">Well done!</string>
+    <string name="Come_and_play">Come and play ! You can do it !</string>
 
 
 </resources>
